@@ -25,3 +25,7 @@ message privé
 
 9. Un utilisateur peut demander au serveur sa déconnexion afin d'éviter aux autres
 utilisateurs de leur permettre de le contacter alors qu'il n'est plus connecté
+
+
+Pour git push
+https://github.com/dnobru31/EDD2017-IRC.git
