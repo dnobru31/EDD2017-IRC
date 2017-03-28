@@ -129,7 +129,7 @@ public class SimpleChatFrameClient extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-
+		
 		JMenu mnFile = new JMenu(Messages.getString("SimpleChatFrameClient.5")); //$NON-NLS-1$
 		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);

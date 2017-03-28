@@ -30,7 +30,7 @@ public class SimpleChatClientApp {
     String serverName;
     String clientName;
     String clientPwd;
-    
+        
 	private SimpleChatFrameClient frame;
 	public StyledDocument documentModel=new DefaultStyledDocument();
 	DefaultListModel<String> clientListModel=new DefaultListModel<String>();
