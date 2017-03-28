@@ -1,5 +1,10 @@
 package com.cfranc.irc.server;
 
+
+// Pour gérer les salons, a priori, le mode salon privé permettrait
+// de gérer une communication privée entre deux utilisateur
+
+// TODO: Garder l'ensemble des messages du salon pour pouvoir le rejouer a un client entrant dans le salon
 public class Salon {
 	private String nomSalon=null;
 	private boolean bPrivate=false;
@@ -23,6 +28,15 @@ public class Salon {
 	}
 	
 	//User userCreator = null; need it ?
+	
+	public void archive (String mess)  {
+		
+	}
+	
+	// Rejoue les message a partir du <depuis> eme.
+//	public StringArray rejoue( int depuis)  {
+//		
+//	}
 	
 	
 	

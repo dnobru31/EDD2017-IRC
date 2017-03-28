@@ -11,7 +11,11 @@ public class SimpleChatClient {
 	private Socket socket = null;
 	private BufferedReader console = null;
 	private DataOutputStream streamOut = null;
+	
+	// Creation du chat client
+
 	public SimpleChatClient(String serverName, int serverPort) {
+		// a) On se connecte au serveur
 		System.out.println("Establishing connection. Please wait ...");
 		try {
 			socket = new Socket(serverName, serverPort);			
@@ -22,6 +26,7 @@ public class SimpleChatClient {
 		} catch (IOException ioe) {
 			System.out.println("Unexpected exception: " + ioe.getMessage());
 		}
+		//b) On attend les commandes au clavier, et on les envoie au serveur
 		String line = "";
 		while (!line.equals(".bye")) {
 			try {
@@ -33,10 +38,15 @@ public class SimpleChatClient {
 			}
 		}
 	}
+	
+	// Demarrage du thread client,   lecture des entrées clavier et creation du flux du sortie
 	public void start() throws IOException {
 		console = new BufferedReader(new InputStreamReader(System.in));
 		streamOut = new DataOutputStream(socket.getOutputStream());
 	}
+	
+	// liberation des ressources ouvertes pour ce client
+	// A APPRONFONDIR, libère t'on les ressources utilisées coté serveur par un client quand il se deconnecte
 	public void stop() {
 		try {
 			if (console != null){console.close();}
@@ -46,6 +56,8 @@ public class SimpleChatClient {
 			System.out.println("Error closing ...");
 		}
 	}
+	
+	// A lancer avec 2 arguments : nom du serveur et port pour 'handshake'
 	public static void main(String args[]) {
 		SimpleChatClient client = null;
 		if (args.length != 2){

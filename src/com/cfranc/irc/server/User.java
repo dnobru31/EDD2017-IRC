@@ -1,5 +1,9 @@
 package com.cfranc.irc.server;
 
+
+// Utilisateur, on gère déja sur quel salon il est, au depart il y a un seul salon
+// le salon général
+
 public class User {
 
 	private String login;
@@ -22,7 +26,7 @@ public class User {
 		this.pwd = pwd;
 	}
 	
-		protected int getIdSalon() {
+	protected int getIdSalon() {
 		return idSalon;
 	}
 
