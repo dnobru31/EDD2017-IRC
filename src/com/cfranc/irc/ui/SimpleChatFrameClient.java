@@ -53,11 +53,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JCheckBoxMenuItem;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import javax.swing.border.BevelBorder;
 
 public class SimpleChatFrameClient extends JFrame {
 
 	private static Document documentModel;
 	private static ListModel<String> listModel;
+	private static ListModel<String> listSalonModel;
+
 	IfSenderModel sender;
 	private String senderName;
 
@@ -107,29 +112,32 @@ public class SimpleChatFrameClient extends JFrame {
 	public void sendMessage() {
 		sender.setMsgToSend(textField.getText());
 	}
-	
-	public void sendMessageSalon(String str) {
-		sender.setMsgToSend(str);
+
+	public void sendMsgCSreationSalonToSend(String str) {
+		sender.setMsgToSend(IfClientServerProtocol.AJ_SAL + str);
 	}
 
 	public SimpleChatFrameClient() {
-		this(null, new DefaultListModel<String>(), SimpleChatClientApp.defaultDocumentModel());
+		this(null, new DefaultListModel<String>(), new DefaultListModel<String>(),
+				SimpleChatClientApp.defaultDocumentModel());
 	}
 
 	/**
 	 * Create the frame.
 	 */
-	public SimpleChatFrameClient(IfSenderModel sender, ListModel<String> clientListModel, Document documentModel) {
+	public SimpleChatFrameClient(IfSenderModel sender, ListModel<String> clientListModel,
+			ListModel<String> salonListModel, Document documentModel) {
 		this.sender = sender;
 		this.documentModel = documentModel;
 		this.listModel = clientListModel;
+		this.listSalonModel = salonListModel;
 		setTitle(Messages.getString("SimpleChatFrameClient.4")); //$NON-NLS-1$
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 660, 600);
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
+
 		JMenu mnFile = new JMenu(Messages.getString("SimpleChatFrameClient.5")); //$NON-NLS-1$
 		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
@@ -154,52 +162,19 @@ public class SimpleChatFrameClient extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		JSplitPane splitPane = new JSplitPane();
-		contentPane.add(splitPane, BorderLayout.CENTER);
+		JToolBar toolBar = new JToolBar();
+		contentPane.add(toolBar, BorderLayout.NORTH);
 
-		JList<String> list = new JList<String>(listModel);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				int iFirstSelectedElement = ((JList) e.getSource()).getSelectedIndex();
-				if (iFirstSelectedElement >= 0 && iFirstSelectedElement < listModel.getSize()) {
-					senderName = listModel.getElementAt(iFirstSelectedElement);
-					getLblSender().setText(senderName);
-				} else {
-					getLblSender().setText("?"); //$NON-NLS-1$
-				}
-			}
-		});
-		list.setMinimumSize(new Dimension(150, 0));
-		splitPane.setLeftComponent(list);
+		JButton button = toolBar.add(sendAction);
 
-		JTextPane textArea = new JTextPane((StyledDocument) documentModel);
-		textArea.setEnabled(false);
-		JScrollPane scrollPaneText = new JScrollPane(textArea);
-
-		JPopupMenu popupMenu = new JPopupMenu();
-		addPopup(textArea, popupMenu);
-
-		JCheckBoxMenuItem chckbxmntmLock = new JCheckBoxMenuItem(Messages.getString("SimpleChatFrameClient.10")); //$NON-NLS-1$
-		chckbxmntmLock.setEnabled(isScrollLocked);
-		popupMenu.add(chckbxmntmLock);
-		chckbxmntmLock.addActionListener(lockAction);
-
-		scrollPaneText.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				if (isScrollLocked) {
-					e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-				}
-			}
-		});
-
-		splitPane.setRightComponent(scrollPaneText);
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.add(panel_2, BorderLayout.WEST);
+		panel_2.setLayout(new BorderLayout(0, 0));
 
 		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		panel_2.add(panel_1, BorderLayout.SOUTH);
+		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel = new JPanel();
 		panel_1.add(panel);
@@ -232,7 +207,7 @@ public class SimpleChatFrameClient extends JFrame {
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(textField, GroupLayout.PREFERRED_SIZE, 209, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnSend, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)));
+						.addComponent(btnSend, GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)));
 		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel
 				.createSequentialGroup().addGap(10)
 				.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
@@ -242,10 +217,57 @@ public class SimpleChatFrameClient extends JFrame {
 						.addComponent(btnNewSalon))));
 		panel.setLayout(gl_panel);
 
-		JToolBar toolBar = new JToolBar();
-		contentPane.add(toolBar, BorderLayout.NORTH);
+		JSplitPane splitPane = new JSplitPane();
+		panel_2.add(splitPane, BorderLayout.CENTER);
 
-		JButton button = toolBar.add(sendAction);
+		JTextPane textArea = new JTextPane((StyledDocument) documentModel);
+		textArea.setEnabled(false);
+		JScrollPane scrollPaneText = new JScrollPane(textArea);
+
+		JPopupMenu popupMenu = new JPopupMenu();
+		addPopup(textArea, popupMenu);
+
+		JCheckBoxMenuItem chckbxmntmLock = new JCheckBoxMenuItem(Messages.getString("SimpleChatFrameClient.10")); //$NON-NLS-1$
+		chckbxmntmLock.setEnabled(isScrollLocked);
+		popupMenu.add(chckbxmntmLock);
+		chckbxmntmLock.addActionListener(lockAction);
+
+		scrollPaneText.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				if (isScrollLocked) {
+					e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+				}
+			}
+		});
+
+		splitPane.setRightComponent(scrollPaneText);
+
+		JPanel panel_3 = new JPanel();
+		splitPane.setLeftComponent(panel_3);
+		panel_3.setLayout(new GridLayout(0, 1, 0, 0));
+
+		JList<String> list = new JList<String>(listModel);
+		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_3.add(list);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				int iFirstSelectedElement = ((JList) e.getSource()).getSelectedIndex();
+				if (iFirstSelectedElement >= 0 && iFirstSelectedElement < listModel.getSize()) {
+					senderName = listModel.getElementAt(iFirstSelectedElement);
+					getLblSender().setText(senderName);
+				} else {
+					getLblSender().setText("?"); //$NON-NLS-1$
+				}
+			}
+		});
+		list.setMinimumSize(new Dimension(150, 0));
+
+		JList list_1 = new JList();
+		list_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_3.add(list_1);
 	}
 
 	public JLabel getLblSender() {
@@ -278,17 +300,20 @@ public class SimpleChatFrameClient extends JFrame {
 			return new ImageIcon(SimpleChatFrameClient.class.getResource("send_16_16.jpg")); //$NON-NLS-1$
 		}
 
-		public sendActionNewSalon(){
+		public sendActionNewSalon() {
 			putValue(NAME, Messages.getString("SimpleChatFrameClient.14")); //$NON-NLS-1$
 			putValue(SHORT_DESCRIPTION, Messages.getString("SimpleChatFrameClient.14")); //$NON-NLS-1$
 			putValue(SMALL_ICON, getIcon());
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			String res =JOptionPane.showInputDialog(null, "Veuillez saisir le nom de votre salon.", "Création d'un nouveau salon",JOptionPane.QUESTION_MESSAGE);
-			 if (res != null) {System.out.println(res);
-			 sendMessageSalon(res);
-			 }
+			String res = JOptionPane.showInputDialog(null, "Veuillez saisir le nom de votre salon.",
+					"Création d'un nouveau salon", JOptionPane.QUESTION_MESSAGE);
+			if (res != null) {
+				System.out.println(res);
+				//LPAL
+				sendMsgCSreationSalonToSend(res);
+			}
 		}
 	}
 

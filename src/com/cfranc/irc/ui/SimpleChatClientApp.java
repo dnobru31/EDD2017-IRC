@@ -34,6 +34,7 @@ public class SimpleChatClientApp {
 	private SimpleChatFrameClient frame;
 	public StyledDocument documentModel=new DefaultStyledDocument();
 	DefaultListModel<String> clientListModel=new DefaultListModel<String>();
+	DefaultListModel<String> salonListModel=new DefaultListModel<String>();
 	
     public static final String BOLD_ITALIC = "BoldItalic";
     public static final String GRAY_PLAIN = "Gray";
@@ -67,7 +68,7 @@ public class SimpleChatClientApp {
 	public void displayClient() {
 		
 		// Init GUI
-		this.frame=new SimpleChatFrameClient(clientToServerThread, clientListModel, documentModel);
+		this.frame=new SimpleChatFrameClient(clientToServerThread, clientListModel, salonListModel, documentModel);
 		this.frame.setTitle(this.frame.getTitle()+" : "+clientName+" connected to "+serverName+":"+serverPort);
 		((JFrame)this.frame).setVisible(true);
 		this.frame.addWindowListener(new WindowListener() {
