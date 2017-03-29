@@ -23,23 +23,24 @@ public class SalonLst  {
 		
 	}
 
-	
+
 	// création d'un salon après reception de l'objet (Salon)
 	public boolean add(Salon newSalon)  {
 		boolean ajoutOK = true;
 		
 		if(!lstSalons.contains(newSalon)){
 			lstSalons.add(newSalon);
-			System.out.println("Le salon " + newSalon + " a bien été créé...");
+			System.out.println("Le salon " + newSalon.getNomSalon() + " a bien été créé...");
 			
 		}else {
-			System.out.println("Le salon " + newSalon + " existe déjà, deux salons ne peuvent porter le même nom");
+			System.out.println("Le salon " + newSalon.getNomSalon() + " existe déjà, deux salons ne peuvent porter le même nom");
 			ajoutOK= false;
 			
 		}
 		return ajoutOK;
 		
 	}
+
 	
 	
 	// création d'un salon après réception du nom (String)
