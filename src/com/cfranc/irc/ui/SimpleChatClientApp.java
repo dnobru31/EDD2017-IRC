@@ -138,7 +138,10 @@ public class SimpleChatClientApp {
 		try {
 			socketClientServer = new Socket(this.serverName, this.serverPort);
 			// Start connection services
-			clientToServerThread=new ClientToServerThread(documentModel, clientListModel,socketClientServer,clientName, clientPwd);
+			
+			
+			//!!!! clientListModel sur les 2 paramatres pour passer a l'execution
+			clientToServerThread=new ClientToServerThread(documentModel, clientListModel,clientListModel,socketClientServer,clientName, clientPwd);
 			clientToServerThread.start();
 
 			System.out.println("Connected: " + socketClientServer);

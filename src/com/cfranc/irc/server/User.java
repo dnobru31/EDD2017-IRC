@@ -26,7 +26,7 @@ public class User {
 		this.pwd = pwd;
 	}
 	
-	protected int getIdSalon() {
+	public int getIdSalon() {
 		return idSalon;
 	}
 

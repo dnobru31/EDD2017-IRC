@@ -1,5 +1,6 @@
 package com.cfranc.irc.server;
 
+import java.util.List;
 
 // Pour gérer les salons, a priori, le mode salon privé permettrait
 // de gérer une communication privée entre deux utilisateur
@@ -8,6 +9,8 @@ package com.cfranc.irc.server;
 public class Salon {
 	private String nomSalon=null;
 	private boolean bPrivate=false;
+	
+	private List<User> listeDesUsers;
 	
 	public String getNomSalon() {
 		return nomSalon;
@@ -31,6 +34,16 @@ public class Salon {
 	
 	public void archive (String mess)  {
 		
+	}
+	
+	public boolean addUser(User userAAjouter) {
+		boolean ajoutPossible = false;
+		if (listeDesUsers.contains(userAAjouter)==false) {
+			listeDesUsers.add(userAAjouter);
+			ajoutPossible=true;
+		} 
+		
+		return ajoutPossible;
 	}
 	
 	// Rejoue les message a partir du <depuis> eme.

@@ -21,8 +21,14 @@ public class BroadcastThread extends Thread {
 		Collections.synchronizedMap(clientTreadsMap);
 	}
 	
+	public static SalonLst listeDesSalons=new SalonLst();
+	
+	public static String dernierMessageEnvoye=""; // pour Test
+	//public static User dernierUserEnvoye = null;
 	// Ajout d'un client si existe pas déja
 	// On recoit un user et le thread qui lui a été attribué par le serveur
+	
+	//TODO  => addclientTosalon( en ajoutant un 3eme arguement salon a 0 par défaut)
 	public static boolean addClient(User newUser, ServerToClientThread newServerToClientThread){
 		boolean res=true;
 		if(clientTreadsMap.containsKey(newUser)){
@@ -35,30 +41,37 @@ public class BroadcastThread extends Thread {
 			// a: on demande au serveur de poster a tous les user préexistants 
 			//  un message ADD<login> du nouvel user
 			for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+				// si le client courant est sur le salon en paramètre alors
+				// l'avertir que quelqu'un arrive
 				entry.getValue().post(IfClientServerProtocol.ADD+newUser.getLogin());
 			}
 			
 			// b: On mémorise reellement le nouveau user et son thread
+			// Todo ajouter a clientTreadsMap seulement si on est sur le salon 0.
 			clientTreadsMap.put(newUser, newServerToClientThread);
 			
 			// c: On demande au serveur de poster au nouvel user (thread recu en paramétre)
 			//   la liste de tous les login existants (y compris lui meme)
 			for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-			newServerToClientThread.post(IfClientServerProtocol.ADD+entry.getKey().getLogin());   
+				// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
+				newServerToClientThread.post(IfClientServerProtocol.ADD+entry.getKey().getLogin());   
 			} 
 		}
 		return res;
 	}
 	
 	// Ajout de salon a batir sur le meme principe
-	// En ayant enrichi IfClientServerProtocol  pour avoir le mot 'SAL' par exemple
-	public static boolean addSalon() {
+	public static boolean addSalon(Salon newSalon) {
+		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+			entry.getValue().post(IfClientServerProtocol.AJ_SAL+newSalon.getNomSalon());
+		}
 		return true;
 	}
 
 	// envoyer à chaque thread existant, le message en paramètre en précisant l'expéditeur
 	public static void sendMessage(User sender, String msg){
-		
+		 dernierMessageEnvoye = msg;
+		 //dernierUserEnvoye = sender;
 		// clientTreads, est le tableau des thread (on a recupére que les values dans hashMap)
 		Collection<ServerToClientThread> clientTreads=clientTreadsMap.values();
 		
@@ -93,8 +106,7 @@ public class BroadcastThread extends Thread {
 	
 	
 	// le user existe t'il déja ? (utilisé par le serveur pour accepter un client)
-	// Enrichir ici l'authentification si necessaire
-	public static boolean accept(User user){
+		public static boolean accept(User user){
 		boolean res=true;
 		if(clientTreadsMap.containsKey(user)){
 			res= false;

@@ -11,18 +11,22 @@ import java.util.List;
 import com.cfranc.irc.IfClientServerProtocol;
 
 
-// Envoi de message du serveur vers le client
+// Envoi de message d'UN client vers le serveur
 public class ServerToClientThread extends Thread{
-	private User user;
+	private User userCourant;
 	private Socket socket = null;
 	private DataInputStream streamIn = null;
 	private DataOutputStream streamOut = null;
+	
+	public ServerToClientThread() {
+		
+	}
 	
 	// Constructor en recevant en paramètre la socket gérant cette connection Serveur/client
 	// et le user qui est géré par cette connection
 	public ServerToClientThread(User user, Socket socket) {
 		super();
-		this.user=user;
+		this.userCourant=user;
 		this.socket = socket;
 	}
 	
@@ -67,6 +71,7 @@ public class ServerToClientThread extends Thread{
 	// Execution du thread
 	@Override
 	public void run() {
+		
 		try {
 			open();  // ouvre flux d'entree sortie sur socket
 			boolean done = false;
@@ -79,26 +84,7 @@ public class ServerToClientThread extends Thread{
 						// Des données sont disponibles en entrée
 						String line = streamIn.readUTF(); // on lit ces données
 						
-						// On tronconne le message en X élements (séparateur '#')
-						// Si on a recu '#toto#bonjour'
-						//  userMsg[1]='toto',  userMsg[2] = 'bonjour'
-						String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
-						String login=userMsg[1];
-						String msg=userMsg[2];
-						done = msg.equals(".bye");  // Condition d'arret du client
-						if(!done){
-							if(login.equals(user)){
-								// le login contenu dans le message est celui du user courant
-								// On s'envoie un message !!!!
-								// (user doit etre convertit implicitement en user.tostring() )
-								// refact login  ==> loginSender
-								//   et   user   ==> userCourant
-								
-								System.err.println("ServerToClientThread::run(), login!=user"+login);
-							}
-							// on publie a tous les user le message <msg> venant de <user>
-							BroadcastThread.sendMessage(user,msg);
-						}
+						traiteDonneesEnEntree(line);
 					}
 					else{
 						// Rien n'est en entrée, on post tous les messages qui peuvent etre en attente
@@ -114,6 +100,126 @@ public class ServerToClientThread extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public boolean traiteDonneesEnEntree(String line) {
+		// Si le message est un message de commande (ajout salon par exemple)
+		// On traite ce message specifique en retournant faux si non accepté
+		boolean done = false;
+
+		if (line.startsWith("##")) {
+			traiteMsgSpecifique(userCourant,line);
+		} else
+		{
+			done = traiteMessageClassique(line);
+		}
+		return done;
+	}
+	public  boolean traiteMessageClassique(String line) {
+		
+		boolean done;
+		// On tronconne le message en X élements (séparateur '#')
+		// Si on a recu '#toto#bonjour'
+		//  userMsg[1]='toto',  userMsg[2] = 'bonjour'
+		
+		// Si message commence par ## on a des lignes de commande du serveur vers le client
+		// (genre ajoute salon), on fait alors un traitement spécifique
+		String reste = line.substring(IfClientServerProtocol.ADD.length());
+		String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
+		String loginSender=userMsg[1];
+		String msg=userMsg[2];
+		System.out.println("traite donnees en entree" + line);
+		System.out.println(loginSender + "/" + msg);
+		done = msg.equals(".bye");  // Condition d'arret du client
+		if(!done){
+			if(loginSender.equals(userCourant)){
+				// le login contenu dans le message est celui du user courant
+				// On s'envoie un message !!!!
+				// (user doit etre convertit implicitement en user.tostring() )
+				
+				
+				System.err.println("ServerToClientThread::run(), login!=user"+loginSender);
+			}
+			
+	
+				// on publie a tous les user le message <msg> venant de <user>
+				// qu'il ait ou non un traitement spécifique
+				// On appele les methodes sur la classe, car c'est en statique
+				BroadcastThread.sendMessage(userCourant,msg);
+	
+		}
+		return done;
+	}
+	
+	public void traiteMsgSpecifique(User userAppelant, String msg) {
+		boolean messageRetenu = true;
+		System.out.println("traite msg specifique" + msg);
+		if(msg.startsWith(IfClientServerProtocol.AJ_SAL)) {messageRetenu = traiteAJ_SAL(userAppelant,msg);}
+		if(msg.startsWith(IfClientServerProtocol.REJOINT_SAL)){	messageRetenu = traite_REJOINT_SAL(userAppelant, msg);}
+
+		if (messageRetenu) {
+			// on le broadcast tel quel a tous les user
+			BroadcastThread.sendMessage(userCourant,msg);
+		}
+		
+	}
+
+	private boolean traite_REJOINT_SAL(User userAppelant, String msg ) {
+		boolean messageRetenu=true;
+		String nomSalonRejoint;
+		Salon salonAJoindre;
+		int numeroSalonAJoindre;
+		String msgQuit;
+			// Un user rejoint le salon
+			String reste =msg.substring(IfClientServerProtocol.REJOINT_SAL.length());
+			String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
+			String nomUser=rejointMsg[0];
+			String nomSalon = rejointMsg[1];
+			// On regarde dans le salon, si le user n'y est pas déja
+			numeroSalonAJoindre = BroadcastThread.listeDesSalons.getNumero(nomSalon);
+			salonAJoindre = BroadcastThread.listeDesSalons.get(numeroSalonAJoindre);
+			if (salonAJoindre.addUser(userAppelant)==false) {
+				post("KO"); // le user est déja dans le salon
+				messageRetenu = false;
+			} else
+			{
+				userQuitteSalon(userAppelant);				
+				// Puis mémoriser au niveau du User sur quel salon il est
+				userAppelant.setIdSalon(numeroSalonAJoindre);
+			};	
+		
+		return messageRetenu;
+	}
+
+	private void userQuitteSalon(User unUser) {
+		String msgQuit;
+		// Avertir tout le monde que User quitte son ancien salon
+		Salon quitteLeSalon = BroadcastThread.listeDesSalons.get(unUser.getIdSalon());
+		msgQuit = IfClientServerProtocol.QUITTE_SAL + unUser.getLogin() + IfClientServerProtocol.SEPARATOR + quitteLeSalon.getNomSalon();
+		BroadcastThread.sendMessage(userCourant,msgQuit);
+	}
+
+	private boolean traiteAJ_SAL(User userAppelant,String msg) {
+		String newSalon;
+		 boolean messageRetenu=true;
+
+			// Ajout de salon
+		 	System.out.println("traite AJ_SAL");
+			String reste =msg.substring(IfClientServerProtocol.AJ_SAL.length());
+			String[] quitteMsg=reste.split(IfClientServerProtocol.SEPARATOR);
+			String nomUser=quitteMsg[0];
+			String nomSalon = quitteMsg[1];
+			System.out.println(nomUser + " ajoute " + nomSalon);
+			if (!BroadcastThread.listeDesSalons.add(nomSalon)) {
+				//  Si impossible retourner KO au client
+				post("KO");
+				messageRetenu = false; // on ne le diffusera pas a tout le monde
+			} else
+			{
+				// Si ok on retournera la creation de salon a tout le monde, inutile d'envoyer;
+			};
+		
+		return messageRetenu;
 	}
 	
 }
