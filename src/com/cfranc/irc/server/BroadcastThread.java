@@ -1,10 +1,12 @@
 package com.cfranc.irc.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
 
 import com.cfranc.irc.IfClientServerProtocol;
 
@@ -159,51 +161,42 @@ public class BroadcastThread extends Thread {
 
 	public static void sendMessage(User sender, String msg){
 		
-		// if sender.getIDsalon() == 
-		sendMessage("#"+sender.getLogin()+"#"+msg);
+		Collection<ServerToClientThread> clientThreads=new ArrayList<ServerToClientThread>();//=clientTreadsMap.values();  // tous les Threads
+		ServerToClientThread unThread;
+		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+			if (entry.getKey().getIdSalon() == sender.getIdSalon())  {
+				clientThreads.add(entry.getValue());
+			}
+		}
+		
+		sendMessage("#"+sender.getLogin()+"#"+msg, clientThreads);
 		System.out.println("Broadcast sendMessage : "+"#"+sender.getLogin()+"#"+msg);
 		
-		Salon salonCourant;
+		
 		
 		// Et on archive ce message
-		salonCourant = listeDesSalons.get(sender.getIdSalon());
+		//Salon salonCourant;
+		//salonCourant = listeDesSalons.get(sender.getIdSalon());
 		//salonCourant.archive(msg);
 	}
 	
 	public static void sendInstruction(User sender, String inst){
-		sendMessage(inst);
+		Collection<ServerToClientThread> clientThreads=clientTreadsMap.values();  // tous les Threads
+		sendMessage(inst,clientThreads);
 		System.out.println("Broadcast sendInstruction : " + inst);
 	}
 	
 	// envoyer à chaque thread existant, le message en paramètre en précisant l'expéditeur
-	private static void sendMessage(String msg){
+	private static void sendMessage(String msg, Collection<ServerToClientThread> aEnvoyer){
 		 dernierMessageEnvoye = msg;
 		 //dernierUserEnvoye = sender;
 		// clientTreads, est le tableau des thread (on a recupére que les values dans hashMap)
-		Collection<ServerToClientThread> clientTreads=clientTreadsMap.values();
+		//Collection<ServerToClientThread> clientTreads=clientTreadsMap.values();
 		
-		Iterator<ServerToClientThread> receiverClientThreadIterator=clientTreads.iterator();
+		Iterator<ServerToClientThread> receiverClientThreadIterator=aEnvoyer.iterator();
 		while (receiverClientThreadIterator.hasNext()) {
 			ServerToClientThread clientThread = (ServerToClientThread) receiverClientThreadIterator.next();
-			
-			
-			//   IMPLEMENTATION SALON
-			
-			// Si sender.idSalon <> clientThread.user.idSalon alors
-			//     ne pas envoyer.
-			
-			//Dans tous les cas garder en buffer le message envoyé avec un ID (propre au salon)
-			// Pour pouvoir rejouer les messages quand le client se (re)connectera au salon
-			
-			// Finallement chaque connection ou reconnection sur un salon, on rejoue tous
-			// les messages
-			
-			// a) balayer hashmap et pas collection
-			
-			// b) passer le userappelant depuis sendMessage
-			
-			
-			//if (unUser.getIdSalon()== newUser.getIdSalon()) {
+	
 			clientThread.post(msg);	
 			
 			// LstSalon.getId(sender.idSalon).archive( <meme message>)   
