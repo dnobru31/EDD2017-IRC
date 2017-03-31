@@ -10,6 +10,6 @@ public interface IfClientServerProtocol {
 	
 	// A voir pour gérer les salons, # suivi d'un 2eme # signifierait salon
 	public static final String AJ_SAL = "##+#";
-	public static final String REJOINT_SAL = "#>#";
-	public static final String QUITTE_SAL = "#<#";
+	public static final String REJOINT_SAL = "##>#";
+	public static final String QUITTE_SAL = "##<#";
 }

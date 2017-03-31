@@ -172,15 +172,18 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
 		String nomUser=rejointMsg[0];
 		String nomSalon = rejointMsg[1];	
-		Salon salonCourant = BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
+		
+		receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
+		
+//		Salon salonCourant = BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
 
-		if (salonCourant.getNomSalon() == nomSalon) {
-			if(!clientListModel.contains(nomUser)){
-				// ajout dans liste user si pas déja présent
-				clientListModel.addElement(nomUser);
-				receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
-			}
-		}
+//		if (salonCourant.getNomSalon() == nomSalon) {
+//			if(!clientListModel.contains(nomUser)){
+//				// ajout dans liste user si pas déja présent
+//				clientListModel.addElement(nomUser);
+//				receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
+//			}
+//		}
 	}
 
 	protected void traiterAjoutSalon(String line) {
@@ -222,7 +225,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 			System.out.println("ClientToserver " + "AJ__SAL recu" );
 		}else if (_msgToSend.startsWith(IfClientServerProtocol.REJOINT_SAL)) {
 			String resteMsg = _msgToSend.substring(IfClientServerProtocol.REJOINT_SAL.length());
-			_msgToSend = IfClientServerProtocol.REJOINT_SAL + IfClientServerProtocol.SEPARATOR + resteMsg;
+			_msgToSend = IfClientServerProtocol.REJOINT_SAL + login + IfClientServerProtocol.SEPARATOR + resteMsg;
 			System.out.println("ClientToserver " + "REJOINT_SAL recu" );
 		}else
 		{

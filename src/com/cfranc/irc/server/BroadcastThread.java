@@ -29,54 +29,145 @@ public class BroadcastThread extends Thread {
 	// On recoit un user et le thread qui lui a été attribué par le serveur
 	
 	//TODO  => addclientTosalon( en ajoutant un 3eme arguement salon a 0 par défaut)
-	public static boolean addClient(User newUser, ServerToClientThread newServerToClientThread){
-		boolean res=true;
-		if(clientTreadsMap.containsKey(newUser)){
+	public static boolean addClient(User newUser, ServerToClientThread newServerToClientThread) {
+		boolean res = true;
+		if(clientTreadsMap.containsKey(newUser)  ){
 			res=false;
 		}
 		else{
-			//clientTreadsMap.put(user, serverToClientThread);	
-			// modifs du 03/11 : ajout de tous les users à la liste des users des clients
-			
-			// a: on demande au serveur de poster a tous les user préexistants 
-			//  un message ADD<login> du nouvel user
-			for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-				// si le client courant est sur le salon en paramètre alors
-				// l'avertir que quelqu'un arrive
-				entry.getValue().post(IfClientServerProtocol.ADD+newUser.getLogin());
-			}
-			
+			newUser.setIdSalon(0);
+			avertirMembreDuSalon(newUser);
 			// b: On mémorise reellement le nouveau user et son thread
-			// Todo ajouter a clientTreadsMap seulement si on est sur le salon 0.
 			clientTreadsMap.put(newUser, newServerToClientThread);
-			
-			// c: On demande au serveur de poster au nouvel user (thread recu en paramétre)
-			//   la liste de tous les login existants (y compris lui meme)
-			for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-				// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
-				newServerToClientThread.post(IfClientServerProtocol.ADD+entry.getKey().getLogin());   
-			} 
-			
-			// 2eme partie, on envoie aussi au nouveau client la liste des salons déja crées
+			//  on envoie aussi au nouveau client la liste des salons déja crées
 			for (int i=0; i < listeDesSalons.taille();i++) {
 				newServerToClientThread.post(IfClientServerProtocol.AJ_SAL + "Admin" + IfClientServerProtocol.SEPARATOR + listeDesSalons.get(i).getNomSalon());
-				
-			}
+			}			
+			retournerListeMembresDuSalon(newUser, newServerToClientThread); 
+			
 		}
-		return res;
+		return res ;
+		
 	}
 	
-	// Ajout de salon a batir sur le meme principe
-	public static boolean addSalon(Salon newSalon) {
-		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-			entry.getValue().post(IfClientServerProtocol.AJ_SAL+newSalon.getNomSalon());
+	
+	public static boolean clientEntreDansSalon(User newUser, ServerToClientThread newServerToClientThread,int numeroSalon){
+		boolean res=true;
+		
+		newUser.setIdSalon(numeroSalon);
+		avertirMembreDuSalon(newUser);
+			
+			// On mémorise reellement le nouveau user et son thread
+						
+		retournerListeMembresDuSalon(newUser, newServerToClientThread); 
+		return res;
+	}	
+
+
+
+	private static void retournerListeMembresDuSalon(User newUser, ServerToClientThread newServerToClientThread) {
+		User unUser;
+		// c: On demande au serveur de poster au nouvel user (thread recu en paramétre)
+		//   la liste de tous les login existants (y compris lui meme)
+		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+			// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
+			unUser= entry.getKey();
+			if (unUser.getIdSalon()== newUser.getIdSalon()) {
+				// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
+				newServerToClientThread.post(IfClientServerProtocol.ADD+unUser.getLogin());  
+			}
 		}
-		return true;
 	}
 
+
+	private static void avertirMembreDuSalon(User newUser) {
+		User unUser;
+		ServerToClientThread threadClient;
+		// a: on demande au serveur de poster a tous les user préexistants 
+		//  un message ADD<login> du nouvel user
+		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+			// si le client courant est sur le salon en paramètre alors
+			// l'avertir que quelqu'un arrive
+			// si le client courant est sur le salon en paramètre alors
+			// l'avertir que quelqu'un arrive
+			threadClient= entry.getValue();
+			unUser = entry.getKey();
+			if (unUser.getIdSalon()== newUser.getIdSalon()) {
+				threadClient.post(IfClientServerProtocol.ADD+newUser.getLogin());
+			}
+			
+		}
+	}
+	
+//	// Un client entre dans le salon, il faut preciser que ce user est sur ce salon
+//	// il faut avertir ceux qui sont déja dans le salon
+//	// Et retourner a ce nouvel user la liste des clients qui sont sur ce salon
+//	public static boolean addClientToSalon(User newUser, ServerToClientThread newServerToClientThread, int numeroSalon){
+//		boolean res=true;
+//		User unUser;
+//		
+//		ServerToClientThread threadClient;
+////		if(clientTreadsMap.containsKey(newUser)){
+////			res=false;
+////		}
+////		else{
+//			//clientTreadsMap.put(user, serverToClientThread);	
+//			// modifs du 03/11 : ajout de tous les users à la liste des users des clients
+//			
+//			// a: on demande au serveur de poster a tous les user connecté au salon
+//			//  un message ADD<login> du nouvel user
+//			for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+//				// si le client courant est sur le salon en paramètre alors
+//				// l'avertir que quelqu'un arrive
+//				threadClient= entry.getValue();
+//				unUser = entry.getKey();
+//				if (unUser.getIdSalon()== newUser.getIdSalon()) {
+//					threadClient.post(IfClientServerProtocol.ADD+newUser.getLogin());
+//				}
+//			}
+//			
+//			// b: On mémorise reellement le nouveau user et son thread
+//			// Todo ajouter a clientTreadsMap seulement si on est sur le salon 0.
+//			newUser.setIdSalon(numeroSalon);
+//			
+//			
+//			// c: On demande au serveur de poster au nouvel user (thread recu en paramétre)
+//			//   la liste de tous les login existants (y compris lui meme)
+//			for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+//				unUser= entry.getKey();
+//				if (unUser.getIdSalon()== newUser.getIdSalon()) {
+//					// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
+//					newServerToClientThread.post(IfClientServerProtocol.ADD+unUser.getLogin());  
+//				}
+//			} 
+//			
+//			// 2eme partie, on envoie aussi au nouveau client la liste des salons déja crées
+//			for (int i=0; i < listeDesSalons.taille();i++) {
+//				newServerToClientThread.post(IfClientServerProtocol.AJ_SAL + "Admin" + IfClientServerProtocol.SEPARATOR + listeDesSalons.get(i).getNomSalon());
+//				
+//			}
+//		//}
+//		return res;
+//	}
+//	// Ajout de salon a batir sur le meme principe
+//	public static boolean addSalon(Salon newSalon) {
+//		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+//			entry.getValue().post(IfClientServerProtocol.AJ_SAL+newSalon.getNomSalon());
+//		}
+//		return true;
+//	}
+
 	public static void sendMessage(User sender, String msg){
-		sendMessage(msg + "#"+sender.getLogin()+"#"+msg);
+		
+		// if sender.getIDsalon() == 
+		sendMessage("#"+sender.getLogin()+"#"+msg);
 		System.out.println("Broadcast sendMessage : "+"#"+sender.getLogin()+"#"+msg);
+		
+		Salon salonCourant;
+		
+		// Et on archive ce message
+		salonCourant = listeDesSalons.get(sender.getIdSalon());
+		//salonCourant.archive(msg);
 	}
 	
 	public static void sendInstruction(User sender, String inst){
@@ -107,12 +198,12 @@ public class BroadcastThread extends Thread {
 			// Finallement chaque connection ou reconnection sur un salon, on rejoue tous
 			// les messages
 			
+			// a) balayer hashmap et pas collection
+			
+			// b) passer le userappelant depuis sendMessage
 			
 			
-//			if (!msg.startsWith("##"))
-//			{msg = msg + "#"+sender.getLogin()+"#"+msg;
-//
-//			}
+			//if (unUser.getIdSalon()== newUser.getIdSalon()) {
 			clientThread.post(msg);	
 			
 			// LstSalon.getId(sender.idSalon).archive( <meme message>)   
