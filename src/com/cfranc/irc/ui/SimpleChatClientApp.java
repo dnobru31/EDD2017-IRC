@@ -30,10 +30,11 @@ public class SimpleChatClientApp {
     String serverName;
     String clientName;
     String clientPwd;
-    
+        
 	private SimpleChatFrameClient frame;
 	public StyledDocument documentModel=new DefaultStyledDocument();
 	DefaultListModel<String> clientListModel=new DefaultListModel<String>();
+	DefaultListModel<String> salonListModel=new DefaultListModel<String>();
 	
     public static final String BOLD_ITALIC = "BoldItalic";
     public static final String GRAY_PLAIN = "Gray";
@@ -67,7 +68,7 @@ public class SimpleChatClientApp {
 	public void displayClient() {
 		
 		// Init GUI
-		this.frame=new SimpleChatFrameClient(clientToServerThread, clientListModel, documentModel);
+		this.frame=new SimpleChatFrameClient(clientToServerThread, clientListModel, salonListModel, documentModel);
 		this.frame.setTitle(this.frame.getTitle()+" : "+clientName+" connected to "+serverName+":"+serverPort);
 		((JFrame)this.frame).setVisible(true);
 		this.frame.addWindowListener(new WindowListener() {
@@ -140,8 +141,8 @@ public class SimpleChatClientApp {
 			// Start connection services
 			
 			
-			//!!!! clientListModel sur les 2 paramatres pour passer a l'execution
-			clientToServerThread=new ClientToServerThread(documentModel, clientListModel,clientListModel,socketClientServer,clientName, clientPwd);
+			
+			clientToServerThread=new ClientToServerThread(documentModel, clientListModel,salonListModel,socketClientServer,clientName, clientPwd);
 			clientToServerThread.start();
 
 			System.out.println("Connected: " + socketClientServer);

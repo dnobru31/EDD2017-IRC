@@ -32,9 +32,8 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 	private BufferedReader console = null;
 	String login,pwd;
 	DefaultListModel<String> clientListModel;
-	StyledDocument documentModel;
-	
 	DefaultListModel<String> salonListModel;
+	StyledDocument documentModel;
 	
 	User userLieAuThread;
 	
@@ -109,7 +108,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
     // Protocole traitant l'ensemble des messages recus du serveur
 	void readMsg() throws IOException{
 		String line = streamIn.readUTF();
-		System.out.println(line);
+		System.out.println("ClientToserver " + line);
 		
 		if(line.startsWith(IfClientServerProtocol.ADD)){
 			// Message recu commence par <ADD>, 
@@ -190,12 +189,13 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		String nomUser=rejointMsg[0];
 		String nomSalon = rejointMsg[1];	
 		
-		
+		receiveMessage(nomUser, "Le salon " + nomSalon + " a été crée!");
+// salonListModel  est NULL
 		if(!salonListModel.contains(nomSalon)){
 			// le user cree un salon si existe pas déja
-			System.out.println("ajout");
+			System.out.println("ClientToserver " +  "ajout");
 			salonListModel.addElement(nomSalon);
-			receiveMessage(nomUser, "Le salon " + nomSalon + " a été crée!");
+
 		
 		}
 	}
@@ -215,15 +215,18 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		// envoyer verbe + login + message
 		//sinon
 		// envoyer login suivi de message
+		System.out.println("setMsgtoSend de clienttoserver");
 		if (_msgToSend.startsWith(IfClientServerProtocol.AJ_SAL)) {
 			String resteMsg = _msgToSend.substring(IfClientServerProtocol.AJ_SAL.length());
 			_msgToSend = IfClientServerProtocol.AJ_SAL + login + IfClientServerProtocol.SEPARATOR + resteMsg;
-			
+			System.out.println("ClientToserver " + "AJ__SAL recu" );
 		}else
 		{
 		_msgToSend = "#"+login+"#"+_msgToSend;
+		
 		}
 		this.msgToSend = _msgToSend;
+		System.out.println("client to server" + this.msgToSend);
 	}
 
 	// Pousser le message en attente sur le flux de sortie
@@ -231,9 +234,11 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		boolean res=false;
 		if(msgToSend!=null){
 			streamOut.writeUTF(msgToSend) ; 
+		    System.out.println("ClientToserver " + "on envoie au serveur le message" + msgToSend);
 			msgToSend=null;
 		    streamOut.flush();		    
 		    res=true;
+
 		}
 		return res;
 	}

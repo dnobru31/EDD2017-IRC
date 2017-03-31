@@ -35,6 +35,24 @@ public class Salon {
 	public void archive (String mess)  {
 		
 	}
+
+	// redefinition de la methode equals pour que content() compare les valeurs et nom les références
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Salon other = (Salon) obj;
+		if (nomSalon == null) {
+			if (other.nomSalon != null)
+				return false;
+		} else if (!nomSalon.equals(other.nomSalon))
+			return false;
+		return true;
+	}
 	
 	public boolean addUser(User userAAjouter) {
 		boolean ajoutPossible = false;

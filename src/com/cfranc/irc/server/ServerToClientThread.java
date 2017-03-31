@@ -80,6 +80,7 @@ public class ServerToClientThread extends Thread{
 					// .available permet de ne pas bloquer, on regarde juste s'il y a qqchose
 					// Ca permet alors de faire le post s'il n'y a rien
 					// (en faisant directement readUTF, on reste bloqué en attente de données)
+					
 					if(streamIn.available()>0){
 						// Des données sont disponibles en entrée
 						String line = streamIn.readUTF(); // on lit ces données
@@ -106,7 +107,7 @@ public class ServerToClientThread extends Thread{
 		// Si le message est un message de commande (ajout salon par exemple)
 		// On traite ce message specifique en retournant faux si non accepté
 		boolean done = false;
-
+		System.out.println("ServerToClient traite donnes par le serveur");
 		if (line.startsWith("##")) {
 			traiteMsgSpecifique(userCourant,line);
 		} else
@@ -128,7 +129,7 @@ public class ServerToClientThread extends Thread{
 		String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
 		String loginSender=userMsg[1];
 		String msg=userMsg[2];
-		System.out.println("traite donnees en entree" + line);
+		System.out.println("ServerToClient traite donnees en entree" + line);
 		System.out.println(loginSender + "/" + msg);
 		done = msg.equals(".bye");  // Condition d'arret du client
 		if(!done){
@@ -153,7 +154,7 @@ public class ServerToClientThread extends Thread{
 	
 	public void traiteMsgSpecifique(User userAppelant, String msg) {
 		boolean messageRetenu = true;
-		System.out.println("traite msg specifique" + msg);
+		System.out.println("ServerToClient traite msg specifique" + msg);
 		if(msg.startsWith(IfClientServerProtocol.AJ_SAL)) {messageRetenu = traiteAJ_SAL(userAppelant,msg);}
 		if(msg.startsWith(IfClientServerProtocol.REJOINT_SAL)){	messageRetenu = traite_REJOINT_SAL(userAppelant, msg);}
 
@@ -204,19 +205,19 @@ public class ServerToClientThread extends Thread{
 		 boolean messageRetenu=true;
 
 			// Ajout de salon
-		 	System.out.println("traite AJ_SAL");
+		 	System.out.println("ServerToClient traite AJ_SAL");
 			String reste =msg.substring(IfClientServerProtocol.AJ_SAL.length());
 			String[] quitteMsg=reste.split(IfClientServerProtocol.SEPARATOR);
 			String nomUser=quitteMsg[0];
 			String nomSalon = quitteMsg[1];
-			System.out.println(nomUser + " ajoute " + nomSalon);
+			System.out.println("ServerToClient " + nomUser + " ajoute " + nomSalon);
 			if (!BroadcastThread.listeDesSalons.add(nomSalon)) {
 				//  Si impossible retourner KO au client
 				post("KO");
 				messageRetenu = false; // on ne le diffusera pas a tout le monde
 			} else
 			{
-				// Si ok on retournera la creation de salon a tout le monde, inutile d'envoyer;
+				// Si ok on retournera la creation de salon a tout le monde;
 			};
 		
 		return messageRetenu;

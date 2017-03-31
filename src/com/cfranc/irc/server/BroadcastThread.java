@@ -91,12 +91,18 @@ public class BroadcastThread extends Thread {
 			// Finallement chaque connection ou reconnection sur un salon, on rejoue tous
 			// les messages
 			
-			clientThread.post("#"+sender.getLogin()+"#"+msg);	
+			
+			
+			if (!msg.startsWith("##"))
+			{msg = msg + "#"+sender.getLogin()+"#"+msg;
+
+			}
+			clientThread.post(msg);	
 			
 			// LstSalon.getId(sender.idSalon).archive( <meme message>)   
 			// Attention a ne pas archiver 2 fois quand on rejoue un message
 			// pour l'arrivée d'un client dans le salon
-			System.out.println("sendMessage : "+"#"+sender.getLogin()+"#"+msg);
+			System.out.println("Broadcast sendMessage : "+"#"+sender.getLogin()+"#"+msg);
 		}
 	}
 	

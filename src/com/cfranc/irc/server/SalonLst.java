@@ -1,12 +1,13 @@
 package com.cfranc.irc.server;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 // Pour connaitre la liste des salons existants, il y en a toujours au moins un (le général)
 public class SalonLst  {
 
-	private ArrayList <Salon> lstSalons; // list des salons
+	protected ArrayList <Salon> lstSalons; // list des salons
 	
 	public SalonLst(){
 		this.lstSalons = new ArrayList<Salon>();
@@ -21,13 +22,45 @@ public class SalonLst  {
 		return (Salon) lstSalons.get(i);		
 		
 	}
+	
+	public int taille() { return lstSalons.size();}
+	public int getNumero(String unNomSalon) {
+		// retrouve le numero de salon a partir de son nom en faisant un parcours
+		return 0;
+	}
 
-	public boolean add(Salon unSalon)  {
-		// Verifier le salon n'est pas dans lstSalons et l'ajouter alors
-		// TODO
-		return true;
+
+
+	// création d'un salon après reception de l'objet (Salon)
+	public boolean add(Salon newSalon)  {
+		boolean ajoutOK = true;
+		
+		if(!lstSalons.contains(newSalon)){
+			lstSalons.add(newSalon);
+			System.out.println("Le salon " + newSalon.getNomSalon() + " a bien été créé...");
+			
+		}else {
+			System.out.println("Le salon " + newSalon.getNomSalon() + " existe déjà, deux salons ne peuvent porter le même nom");
+			ajoutOK= false;
+			
+		}
+		return ajoutOK;
 		
 	}
+
+	
+	
+	// création d'un salon après réception du nom (String)
+	public boolean add(String nomSalon)  {
+						
+		Salon newSalon = new Salon(nomSalon, false); 
+				
+		return add(newSalon);
+		
+		
+	}
+	
+	
 	public void remove() {
 		// TODO
 	}
