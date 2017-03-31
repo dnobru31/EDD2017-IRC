@@ -66,6 +66,7 @@ public class SimpleChatFrameClient extends JFrame {
 
 	IfSenderModel sender;
 	private String senderName;
+	private String senderSalonName;
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -115,7 +116,6 @@ public class SimpleChatFrameClient extends JFrame {
 	}
 
 	public void sendMsgCSreationSalonToSend(String str) {
-		
 		sender.setMsgToSend(IfClientServerProtocol.AJ_SAL + str); //("##+#" + str); //
 	}
 
@@ -267,9 +267,23 @@ public class SimpleChatFrameClient extends JFrame {
 		});
 		list.setMinimumSize(new Dimension(150, 0));
 
-		JList<String> list_1 = new JList<String>(salonListModel);
-		list_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panel_3.add(list_1);
+		JList<String> listSalon = new JList<String>(this.listSalonModel);
+		listSalon.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listSalon.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_3.add(listSalon);
+		listSalon.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				int iFirstSelectedElement = ((JList) e.getSource()).getSelectedIndex();
+				if (iFirstSelectedElement >= 0 && iFirstSelectedElement < listSalonModel.getSize()) {
+					senderSalonName = listSalonModel.getElementAt(iFirstSelectedElement);
+					getLblSender().setText(senderSalonName);
+				} else {
+					getLblSender().setText("?"); //$NON-NLS-1$
+				}
+			}
+		});
+		listSalon.setMinimumSize(new Dimension(150, 0));
+		
 	}
 
 	public JLabel getLblSender() {
@@ -314,7 +328,6 @@ public class SimpleChatFrameClient extends JFrame {
 					"Création d'un nouveau salon", JOptionPane.QUESTION_MESSAGE);
 			if (res != null) {
 				System.out.println(res);
-				//LPAL
 				sendMsgCSreationSalonToSend(res);
 			}
 			//sendMessage();

@@ -48,6 +48,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		super();
 		this.documentModel=documentModel;
 		this.clientListModel=clientListModel;
+		this.salonListModel=salonListModel;
 		this.socket = socket;
 		this.login=login;
 		this.pwd=pwd;
