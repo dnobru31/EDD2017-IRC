@@ -56,6 +56,12 @@ public class BroadcastThread extends Thread {
 				// si entry.getvalue().user est sur le salon alors renvoyer a celui qui entre.
 				newServerToClientThread.post(IfClientServerProtocol.ADD+entry.getKey().getLogin());   
 			} 
+			
+			// 2eme partie, on envoie aussi au nouveau client la liste des salons déja crées
+			for (int i=0; i < listeDesSalons.taille();i++) {
+				newServerToClientThread.post(IfClientServerProtocol.AJ_SAL + "Admin" + IfClientServerProtocol.SEPARATOR + listeDesSalons.get(i).getNomSalon());
+				
+			}
 		}
 		return res;
 	}
@@ -68,8 +74,18 @@ public class BroadcastThread extends Thread {
 		return true;
 	}
 
-	// envoyer à chaque thread existant, le message en paramètre en précisant l'expéditeur
 	public static void sendMessage(User sender, String msg){
+		sendMessage(msg + "#"+sender.getLogin()+"#"+msg);
+		System.out.println("Broadcast sendMessage : "+"#"+sender.getLogin()+"#"+msg);
+	}
+	
+	public static void sendInstruction(User sender, String inst){
+		sendMessage(inst);
+		System.out.println("Broadcast sendInstruction : " + inst);
+	}
+	
+	// envoyer à chaque thread existant, le message en paramètre en précisant l'expéditeur
+	private static void sendMessage(String msg){
 		 dernierMessageEnvoye = msg;
 		 //dernierUserEnvoye = sender;
 		// clientTreads, est le tableau des thread (on a recupére que les values dans hashMap)
@@ -93,16 +109,16 @@ public class BroadcastThread extends Thread {
 			
 			
 			
-			if (!msg.startsWith("##"))
-			{msg = msg + "#"+sender.getLogin()+"#"+msg;
-
-			}
+//			if (!msg.startsWith("##"))
+//			{msg = msg + "#"+sender.getLogin()+"#"+msg;
+//
+//			}
 			clientThread.post(msg);	
 			
 			// LstSalon.getId(sender.idSalon).archive( <meme message>)   
 			// Attention a ne pas archiver 2 fois quand on rejoue un message
 			// pour l'arrivée d'un client dans le salon
-			System.out.println("Broadcast sendMessage : "+"#"+sender.getLogin()+"#"+msg);
+	
 		}
 	}
 	

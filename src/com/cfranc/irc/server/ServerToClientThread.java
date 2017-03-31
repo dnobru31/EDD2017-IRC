@@ -160,7 +160,7 @@ public class ServerToClientThread extends Thread{
 
 		if (messageRetenu) {
 			// on le broadcast tel quel a tous les user
-			BroadcastThread.sendMessage(userCourant,msg);
+			BroadcastThread.sendInstruction(userCourant,msg);
 		}
 		
 	}
