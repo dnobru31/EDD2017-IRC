@@ -119,6 +119,10 @@ public class SimpleChatFrameClient extends JFrame {
 		sender.setMsgToSend(IfClientServerProtocol.AJ_SAL + str); //("##+#" + str); //
 	}
 
+	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
+		sender.setMsgToSend(IfClientServerProtocol.REJOINT_SAL + nomDuSalon); 
+	}
+	
 	public SimpleChatFrameClient() {
 		this(null, new DefaultListModel<String>(), new DefaultListModel<String>(),
 				SimpleChatClientApp.defaultDocumentModel());
@@ -135,7 +139,7 @@ public class SimpleChatFrameClient extends JFrame {
 		this.listSalonModel = salonListModel;
 		setTitle(Messages.getString("SimpleChatFrameClient.4")); //$NON-NLS-1$
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 660, 600);
+		setBounds(100, 100, 740, 600);
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -268,6 +272,17 @@ public class SimpleChatFrameClient extends JFrame {
 		list.setMinimumSize(new Dimension(150, 0));
 
 		JList<String> listSalon = new JList<String>(this.listSalonModel);
+		listSalon.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int rep  = JOptionPane.showConfirmDialog(null, "Voulez vous rejoindre ce salon?");
+				if (rep == 0) {
+					sendMsgRejoindreUnSalonToSend(listSalon.getSelectedValue());
+				}
+				
+			}
+		});
 		listSalon.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listSalon.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel_3.add(listSalon);
