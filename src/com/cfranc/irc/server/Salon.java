@@ -1,6 +1,7 @@
 package com.cfranc.irc.server;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 // Pour gérer les salons, a priori, le mode salon privé permettrait
 // de gérer une communication privée entre deux utilisateur
@@ -11,6 +12,8 @@ public class Salon {
 	private boolean bPrivate=false;
 	
 	private List<User> listeDesUsers;
+	
+	public ConcurrentLinkedQueue<String> histoSalon;
 	
 	public String getNomSalon() {
 		return nomSalon;
@@ -28,11 +31,23 @@ public class Salon {
 		super();
 		this.nomSalon = nomSalon;
 		this.bPrivate = bPrivate;
+		this.histoSalon = new ConcurrentLinkedQueue<String>();
 	}
 	
 	//User userCreator = null; need it ?
 	
-	public void archive (String mess)  {
+
+	// si la liste est < à la taille max, rajouter newMess à la fin; sinon supprimer le 1er message de la liste et rajouter newMessage à la fin
+	// la liste (ConcurrentLinkedQueue<String>) est créée par le constructeur de Salon
+	public void archive (String newMess)  {
+		int tailleMaxHisto = 3;
+		
+		if (histoSalon.size()< tailleMaxHisto) {
+			histoSalon.add(newMess);
+		}else{
+			histoSalon.remove();
+			histoSalon.add(newMess);
+		}
 		
 	}
 
