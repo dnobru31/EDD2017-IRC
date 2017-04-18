@@ -11,6 +11,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import com.cfranc.irc.IfClientServerProtocol;
+import com.cfranc.irc.ProtocoleIRC;
 
 
 // Cote serveur, comment gérer la connection d'un nouveau client, et lui demander login mot de  passe
@@ -20,6 +21,8 @@ public class ClientConnectThread extends Thread implements IfClientServerProtoco
 	
 	private boolean canStop=false;
 	private ServerSocket server = null;
+	
+	private ProtocoleIRC unMessageIRC = new ProtocoleIRC();
 	
 	private void printMsg(String msg){
 		try {
@@ -84,9 +87,12 @@ public class ClientConnectThread extends Thread implements IfClientServerProtoco
 			Thread.sleep(100);
 		}
 		String reponse=dis.readUTF();
-		String[] userPwd=reponse.split(SEPARATOR);
-		String login=userPwd[1];
-		String pwd=userPwd[2];
+		unMessageIRC.decode(reponse);
+//		String[] userPwd=reponse.split(SEPARATOR);
+//		String login=userPwd[1];
+//		String pwd=userPwd[2];
+		String login = unMessageIRC.userEmetteur;
+		String pwd = unMessageIRC.commentaire;  // Le pwd est dans le commentaire
 		// On analyse le message recu et on connait le login et password en entrée
 		
 		int salonUser=0;  // pour l'instant figé sur le salon général
@@ -104,7 +110,8 @@ public class ClientConnectThread extends Thread implements IfClientServerProtoco
 				client.start();	 // On lance le thread du client crée		
 				clientListModel.addElement(newUser.getLogin());  // On l'ajoute dans la liste des user connectés
 				// 2eme acquittement au client pour lui dire que tt les users connaissent sa présence
-				dos.writeUTF(ADD+login); 
+				//dos.writeUTF(ADD+login); 
+				dos.writeUTF(unMessageIRC.encode(login,IfClientServerProtocol.ADD,".",".","."));
 			}
 		}
 		else{
