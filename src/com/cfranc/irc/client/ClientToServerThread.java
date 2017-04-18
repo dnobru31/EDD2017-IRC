@@ -138,7 +138,6 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		else if(line.startsWith(IfClientServerProtocol.QUITTE_SAL)){
 			traiterQuitterSalon(line);
 		}
-
 		else{
 			// A defaut, c'est un message 'chat' du type '#user#message'
 			String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
@@ -164,7 +163,8 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 			}
 		}
 	}
-
+	
+	
 	private void traiterRejointSalon(String line) {
 		// Message recu commence par <REJOINT_SAL>, un user rejoint un salon
 		// Si c'est le salon de l'utilisateur courant alors on peut l'ajouter a la liste des users
@@ -172,15 +172,18 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
 		String nomUser=rejointMsg[0];
 		String nomSalon = rejointMsg[1];	
-		Salon salonCourant = BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
+		
+		receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
+		
+//		Salon salonCourant = BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
 
-		if (salonCourant.getNomSalon() == nomSalon) {
-			if(!clientListModel.contains(nomUser)){
-				// ajout dans liste user si pas déja présent
-				clientListModel.addElement(nomUser);
-				receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
-			}
-		}
+//		if (salonCourant.getNomSalon() == nomSalon) {
+//			if(!clientListModel.contains(nomUser)){
+//				// ajout dans liste user si pas déja présent
+//				clientListModel.addElement(nomUser);
+//				receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
+//			}
+//		}
 	}
 
 	protected void traiterAjoutSalon(String line) {
@@ -191,13 +194,12 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		String nomSalon = rejointMsg[1];	
 		
 		receiveMessage(nomUser, "Le salon " + nomSalon + " a été crée!");
-// salonListModel  est NULL
+			// salonListModel  est NULL
 		if(!salonListModel.contains(nomSalon)){
 			// le user cree un salon si existe pas déja
 			System.out.println("ClientToserver " +  "ajout");
 			salonListModel.addElement(nomSalon);
 
-		
 		}
 	}
 	
@@ -217,10 +219,14 @@ public class ClientToServerThread extends Thread implements IfSenderModel{
 		//sinon
 		// envoyer login suivi de message
 		System.out.println("setMsgtoSend de clienttoserver");
-		if (_msgToSend.startsWith(IfClientServerProtocol.AJ_SAL)) {
+		if(_msgToSend.startsWith(IfClientServerProtocol.AJ_SAL)) {
 			String resteMsg = _msgToSend.substring(IfClientServerProtocol.AJ_SAL.length());
 			_msgToSend = IfClientServerProtocol.AJ_SAL + login + IfClientServerProtocol.SEPARATOR + resteMsg;
 			System.out.println("ClientToserver " + "AJ__SAL recu" );
+		}else if (_msgToSend.startsWith(IfClientServerProtocol.REJOINT_SAL)) {
+			String resteMsg = _msgToSend.substring(IfClientServerProtocol.REJOINT_SAL.length());
+			_msgToSend = IfClientServerProtocol.REJOINT_SAL + login + IfClientServerProtocol.SEPARATOR + resteMsg;
+			System.out.println("ClientToserver " + "REJOINT_SAL recu" );
 		}else
 		{
 		_msgToSend = "#"+login+"#"+_msgToSend;

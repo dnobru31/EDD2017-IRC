@@ -107,7 +107,7 @@ public class ServerToClientThread extends Thread{
 		// Si le message est un message de commande (ajout salon par exemple)
 		// On traite ce message specifique en retournant faux si non accepté
 		boolean done = false;
-		System.out.println("ServerToClient traite donnes par le serveur");
+		System.out.println("ServerToClient traite donnes par le serveur" + line);
 		if (line.startsWith("##")) {
 			traiteMsgSpecifique(userCourant,line);
 		} else
@@ -171,23 +171,37 @@ public class ServerToClientThread extends Thread{
 		Salon salonAJoindre;
 		int numeroSalonAJoindre;
 		String msgQuit;
+		ServerToClientThread unThread;
 			// Un user rejoint le salon
 			String reste =msg.substring(IfClientServerProtocol.REJOINT_SAL.length());
 			String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
 			String nomUser=rejointMsg[0];
 			String nomSalon = rejointMsg[1];
+
+			System.out.println("user nom = " + userAppelant.getLogin());
+			System.out.println(nomUser + "rejoint " + nomSalon);
+			
 			// On regarde dans le salon, si le user n'y est pas déja
 			numeroSalonAJoindre = BroadcastThread.listeDesSalons.getNumero(nomSalon);
 			salonAJoindre = BroadcastThread.listeDesSalons.get(numeroSalonAJoindre);
-			if (salonAJoindre.addUser(userAppelant)==false) {
-				post("KO"); // le user est déja dans le salon
-				messageRetenu = false;
-			} else
-			{
-				userQuitteSalon(userAppelant);				
-				// Puis mémoriser au niveau du User sur quel salon il est
-				userAppelant.setIdSalon(numeroSalonAJoindre);
-			};	
+			System.out.println("salon = " + salonAJoindre.getNomSalon());
+			
+			
+//			if (salonAJoindre.addUser(userAppelant)==false) {
+//				post("KO"); // le user est déja dans le salon
+//				messageRetenu = false;
+//			} else
+//			{
+				
+				System.out.println("broadcaster entre dans salon");
+				// Quand on rejoint un nouveau, on doit quitter l'ancien
+				// userQuitteSalon(userAppelant);	
+				
+				// Il faut avertir tous les users de monSalon  que <user> a rejoint monSalon
+				unThread = BroadcastThread.clientTreadsMap.get(userAppelant);
+				BroadcastThread.clientEntreDansSalon(userAppelant, unThread, numeroSalonAJoindre);
+				
+//			};	
 		
 		return messageRetenu;
 	}

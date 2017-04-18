@@ -25,8 +25,15 @@ public class SalonLst  {
 	
 	public int taille() { return lstSalons.size();}
 	public int getNumero(String unNomSalon) {
+		int ret = 0;
 		// retrouve le numero de salon a partir de son nom en faisant un parcours
-		return 0;
+		for (int i=0; i < lstSalons.size(); i++)  {
+			if (lstSalons.get(i).getNomSalon().equals(unNomSalon) ) {
+				ret = i;
+				break;
+			}
+		}
+		return ret;
 	}
 
 

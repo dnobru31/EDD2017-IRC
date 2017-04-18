@@ -170,7 +170,6 @@ public class SimpleChatClientApp {
 					e.printStackTrace();
 				}
 			}
-
 			
 		});
 		
