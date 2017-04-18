@@ -11,6 +11,7 @@ import java.util.List;
 public class Salon {
 	private String nomSalon=null;
 	private boolean bPrivate=false;
+	private static int tailleMaxHisto = 20;
 	
 	private List<User> listeDesUsers;
 	
@@ -34,14 +35,22 @@ public class Salon {
 		this.historique = new ArrayList<String>();
 	}
 	
+	
+	
+	
+	
 	//User userCreator = null; need it ?
 	
 
+	// getter pour le tailleMaxHisto pour le rendre accessible au test
+	public static int getTailleMaxHisto() {
+		return tailleMaxHisto;
+	}
 
 	// si la liste est < à la taille max, rajouter newMess à la fin; sinon supprimer le 1er message de la liste et rajouter newMessage à la fin
 	// la liste (ArrayList<String>) est créée par le constructeur de Salon
 	public void archive (String mess)  {
-		int tailleMaxHisto = 3;
+		
 		
 		if (historique.size()< tailleMaxHisto) {
 			historique.add(mess);

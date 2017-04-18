@@ -5,26 +5,34 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class SalonTest {
+	
+	int tailleMaxHisto = Salon.getTailleMaxHisto(); // on récupère la taille max de l'historique
 
 	@Test
-	public void archiveTest() { // la taille max du tableau (tailleMaxHisto) est à 3 en dur (classe Salon)
+	public void archiveTest() { 
 		Salon actuel = new Salon("actuel", false);
-		assertEquals (0, actuel.historique.size()); // on teste la taille du tableau a chaque ajout de message
-		actuel.archive("1er message");
-		assertEquals (1, actuel.historique.size());
-		actuel.archive("2ème message");
-		assertEquals (2, actuel.historique.size());
-		actuel.archive("3ème message");
-		assertEquals (3, actuel.historique.size());
-		actuel.archive("4ème message");
-		assertEquals (3, actuel.historique.size());
+				
 		
-		// on teste qu'à l'ajout du 4ème message le 2ème message soit passé de la position 1 à la position 0
-		assertEquals("[2ème message, 3ème message, 4ème message]", actuel.historique.toString());
+		// on rempli le tableau a hauteur de la tailleMaxHisto ATTENTION!! le 1er message est le "message n° 0"
+		for (int i=0; i<tailleMaxHisto; i++) { 
+			actuel.archive("message n° " + i); 
+		}
+		
+		// on ajoute un message supplémentaire par rapport à la taille max
+		actuel.archive("message n° " + (tailleMaxHisto)); 
+		
+		// on vérifie que la liste soit bien à la taille max
+		assertEquals (tailleMaxHisto, actuel.historique.size()); 
+		
+		// on teste que le "message n°0 ait bien été remplacé par le n°1
+		assertEquals ("message n° 1", actuel.historique.get(0).toString()); 
+		
+		// on teste que le dernier message ajouté soit bien en fin de liste
+		assertEquals ("message n° " + (tailleMaxHisto), actuel.historique.get(tailleMaxHisto -1).toString());
+		
 
 		
-		
-		//System.out.println(actuel.histoSalon);
+		System.out.println(actuel.historique);
 	}
 
 }
