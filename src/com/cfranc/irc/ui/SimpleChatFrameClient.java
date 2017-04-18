@@ -45,6 +45,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 
 import com.cfranc.irc.IfClientServerProtocol;
+import com.cfranc.irc.ProtocoleIRC;
 import com.cfranc.irc.client.IfSenderModel;
 
 import javax.swing.JPopupMenu;
@@ -76,6 +77,8 @@ public class SimpleChatFrameClient extends JFrame {
 	private final ResourceAction lockAction = new LockAction();
 
 	private boolean isScrollLocked = true;
+	
+	private ProtocoleIRC unMessageIRC = new ProtocoleIRC();
 
 	/**
 	 * Launch the application.
@@ -112,15 +115,21 @@ public class SimpleChatFrameClient extends JFrame {
 	}
 
 	public void sendMessage() {
-		sender.setMsgToSend(textField.getText());
+		sender.setMsgToSend(unMessageIRC.encode
+				("<User courant>", "DISCUTE", textField.getText(), "", ""));
 	}
 
-	public void sendMsgCSreationSalonToSend(String str) {
-		sender.setMsgToSend(IfClientServerProtocol.AJ_SAL + str); //("##+#" + str); //
+	public void sendMsgCSreationSalonToSend(String salonACreer) {
+		sender.setMsgToSend(unMessageIRC.encode
+				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,""));
+				//IfClientServerProtocol.AJ_SAL + salonACreer); 
 	}
 
 	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
-		sender.setMsgToSend(IfClientServerProtocol.REJOINT_SAL + nomDuSalon); 
+		sender.setMsgToSend(unMessageIRC.encode
+				("<User Courant>",IfClientServerProtocol.REJOINT_SAL,"",nomDuSalon,""));
+				
+				//IfClientServerProtocol.REJOINT_SAL + nomDuSalon); 
 	}
 	
 	public SimpleChatFrameClient() {

@@ -9,16 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cfranc.irc.IfClientServerProtocol;
+import com.cfranc.irc.ProtocoleIRC;
 
 
 // Envoi de message d'UN client vers le serveur
 public class ServerToClientThread extends Thread{
-	private User userCourant;
+	public User userCourant;
 	private Socket socket = null;
 	private DataInputStream streamIn = null;
 	private DataOutputStream streamOut = null;
 	
-	public ServerToClientThread() {
+	private ProtocoleIRC dernierMessageIRC = new ProtocoleIRC();
+	
+	protected ServerToClientThread() {
 		
 	}
 	
@@ -103,12 +106,13 @@ public class ServerToClientThread extends Thread{
 		}
 	}
 
-	public boolean traiteDonneesEnEntree(String line) {
+	protected boolean traiteDonneesEnEntree(String line) {
 		// Si le message est un message de commande (ajout salon par exemple)
 		// On traite ce message specifique en retournant faux si non accepté
 		boolean done = false;
 		System.out.println("ServerToClient traite donnes par le serveur" + line);
-		if (line.startsWith("##")) {
+		dernierMessageIRC.decode(line);
+		if (dernierMessageIRC.verbe.startsWith("_")) {
 			traiteMsgSpecifique(userCourant,line);
 		} else
 		{
@@ -116,22 +120,15 @@ public class ServerToClientThread extends Thread{
 		}
 		return done;
 	}
-	public  boolean traiteMessageClassique(String line) {
+	protected  boolean traiteMessageClassique(String line) {
 		
 		boolean done;
-		// On tronconne le message en X élements (séparateur '#')
-		// Si on a recu '#toto#bonjour'
-		//  userMsg[1]='toto',  userMsg[2] = 'bonjour'
-		
-		// Si message commence par ## on a des lignes de commande du serveur vers le client
-		// (genre ajoute salon), on fait alors un traitement spécifique
-		String reste = line.substring(IfClientServerProtocol.ADD.length());
-		String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
-		String loginSender=userMsg[1];
-		String msg=userMsg[2];
+
+		String loginSender = dernierMessageIRC.userEmetteur;
+		String commentaire = dernierMessageIRC.commentaire;
 		System.out.println("ServerToClient traite donnees en entree" + line);
-		System.out.println(loginSender + "/" + msg);
-		done = msg.equals(".bye");  // Condition d'arret du client
+
+		done = commentaire.equals(".bye");  // Condition d'arret du client
 		if(!done){
 			if(loginSender.equals(userCourant)){
 				// le login contenu dans le message est celui du user courant
@@ -146,17 +143,43 @@ public class ServerToClientThread extends Thread{
 				// on publie a tous les user le message <msg> venant de <user>
 				// qu'il ait ou non un traitement spécifique
 				// On appele les methodes sur la classe, car c'est en statique
-				BroadcastThread.sendMessage(userCourant,msg);
+
+				BroadcastThread.sendMessage(userCourant,line);
 	
 		}
 		return done;
 	}
 	
-	public void traiteMsgSpecifique(User userAppelant, String msg) {
+	protected void traiteMsgSpecifique(User userAppelant, String msg) {
 		boolean messageRetenu = true;
+		String msgQuit;
+		int ancienNoSalon;
+		
 		System.out.println("ServerToClient traite msg specifique" + msg);
-		if(msg.startsWith(IfClientServerProtocol.AJ_SAL)) {messageRetenu = traiteAJ_SAL(userAppelant,msg);}
-		if(msg.startsWith(IfClientServerProtocol.REJOINT_SAL)){	messageRetenu = traite_REJOINT_SAL(userAppelant, msg);}
+		
+		
+		if(dernierMessageIRC.verbe.equals(IfClientServerProtocol.AJ_SAL)) {messageRetenu = traiteAJ_SAL(userAppelant,msg);}
+		if(dernierMessageIRC.verbe.equals(IfClientServerProtocol.REJOINT_SAL))
+		{	
+			ancienNoSalon = userAppelant.getIdSalon();
+			if (ancienNoSalon == -1) 
+			{
+				// premiere entree dans un salon général a la création d'un user
+			}
+			else
+			{
+				// On quitte le salon existe, et on precise qu'on va dans un nouveau salon
+				String nomSalon = BroadcastThread.listeDesSalons.get(ancienNoSalon).getNomSalon();
+				String userPourSalonPrive = "";
+				msgQuit = dernierMessageIRC.encode(userAppelant.getLogin(), IfClientServerProtocol.QUITTE_SAL, "", nomSalon, userPourSalonPrive);
+//				msgQuit = IfClientServerProtocol.QUITTE_SAL + 
+//						userAppelant.getLogin() + IfClientServerProtocol.SEPARATOR +
+//						BroadcastThread.listeDesSalons.get(ancienNoSalon).getNomSalon();
+				traiteMouvementDansSalon(userAppelant, msgQuit,IfClientServerProtocol.QUITTE_SAL);
+			}
+			messageRetenu = traiteMouvementDansSalon(userAppelant, msg,IfClientServerProtocol.REJOINT_SAL);
+		}
+
 
 		if (messageRetenu) {
 			// on le broadcast tel quel a tous les user
@@ -165,65 +188,50 @@ public class ServerToClientThread extends Thread{
 		
 	}
 
-	private boolean traite_REJOINT_SAL(User userAppelant, String msg ) {
-		boolean messageRetenu=true;
-		String nomSalonRejoint;
+	private boolean traiteMouvementDansSalon(User userAppelant, String msg, String typeMessage ) {
+		boolean messageRetenu=true;		
 		Salon salonAJoindre;
-		int numeroSalonAJoindre;
-		String msgQuit;
+		int numeroSalonAJoindre;		
 		ServerToClientThread unThread;
 			// Un user rejoint le salon
-			String reste =msg.substring(IfClientServerProtocol.REJOINT_SAL.length());
-			String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
-			String nomUser=rejointMsg[0];
-			String nomSalon = rejointMsg[1];
-
-			System.out.println("user nom = " + userAppelant.getLogin());
-			System.out.println(nomUser + "rejoint " + nomSalon);
-			
+			dernierMessageIRC.decode(msg);
+			String nomUser=dernierMessageIRC.userEmetteur;
+			String nomSalon = dernierMessageIRC.salonCree;
+			System.out.println("ServerToClient traite mouvement dans salon" + msg + "::" + typeMessage);
+	
 			// On regarde dans le salon, si le user n'y est pas déja
 			numeroSalonAJoindre = BroadcastThread.listeDesSalons.getNumero(nomSalon);
 			salonAJoindre = BroadcastThread.listeDesSalons.get(numeroSalonAJoindre);
-			System.out.println("salon = " + salonAJoindre.getNomSalon());
-			
-			
+	
+			// A verifier que si REJOINT_SAL
 //			if (salonAJoindre.addUser(userAppelant)==false) {
 //				post("KO"); // le user est déja dans le salon
 //				messageRetenu = false;
 //			} else
 //			{
 				
-				System.out.println("broadcaster entre dans salon");
-				// Quand on rejoint un nouveau, on doit quitter l'ancien
-				// userQuitteSalon(userAppelant);	
-				
+				System.out.println("broadcaster " + typeMessage + " dans salon");
+
 				// Il faut avertir tous les users de monSalon  que <user> a rejoint monSalon
 				unThread = BroadcastThread.clientTreadsMap.get(userAppelant);
-				BroadcastThread.clientEntreDansSalon(userAppelant, unThread, numeroSalonAJoindre);
+				BroadcastThread.mouvementDansSalon(userAppelant, unThread, numeroSalonAJoindre,typeMessage);
 				
 //			};	
 		
 		return messageRetenu;
 	}
 
-	private void userQuitteSalon(User unUser) {
-		String msgQuit;
-		// Avertir tout le monde que User quitte son ancien salon
-		Salon quitteLeSalon = BroadcastThread.listeDesSalons.get(unUser.getIdSalon());
-		msgQuit = IfClientServerProtocol.QUITTE_SAL + unUser.getLogin() + IfClientServerProtocol.SEPARATOR + quitteLeSalon.getNomSalon();
-		BroadcastThread.sendMessage(userCourant,msgQuit);
-	}
+
 
 	private boolean traiteAJ_SAL(User userAppelant,String msg) {
-		String newSalon;
+		
 		 boolean messageRetenu=true;
 
 			// Ajout de salon
 		 	System.out.println("ServerToClient traite AJ_SAL");
-			String reste =msg.substring(IfClientServerProtocol.AJ_SAL.length());
-			String[] quitteMsg=reste.split(IfClientServerProtocol.SEPARATOR);
-			String nomUser=quitteMsg[0];
-			String nomSalon = quitteMsg[1];
+
+			String nomUser=dernierMessageIRC.userEmetteur;
+			String nomSalon = dernierMessageIRC.salonCree;
 			System.out.println("ServerToClient " + nomUser + " ajoute " + nomSalon);
 			if (!BroadcastThread.listeDesSalons.add(nomSalon)) {
 				//  Si impossible retourner KO au client

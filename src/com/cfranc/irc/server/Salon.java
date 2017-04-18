@@ -1,5 +1,6 @@
 package com.cfranc.irc.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Pour gérer les salons, a priori, le mode salon privé permettrait
@@ -11,7 +12,7 @@ public class Salon {
 	private boolean bPrivate=false;
 	
 	private List<User> listeDesUsers;
-	
+	public ArrayList<String> historique = new ArrayList<String>();
 	public String getNomSalon() {
 		return nomSalon;
 	}
@@ -33,6 +34,7 @@ public class Salon {
 	//User userCreator = null; need it ?
 	
 	public void archive (String mess)  {
+		historique.add(mess);
 		
 	}
 
