@@ -30,6 +30,7 @@ public class SimpleChatFrameServer extends JFrame{
 		this.clientListModel=clientListModel;
 		serverSalon = new SalonLst();
 		initialize();
+		
 	}
 	
 	/**
@@ -68,5 +69,7 @@ public class SimpleChatFrameServer extends JFrame{
 		});
 		list.setMinimumSize(new Dimension(200,0));
 		scrollPaneList.setViewportView(list);
+						
+		
 	}	
 }

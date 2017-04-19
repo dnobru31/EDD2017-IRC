@@ -102,7 +102,7 @@ public class ClientConnectThread extends Thread implements IfClientServerProtoco
 		boolean isUserOK=authentication(newUser);
 		if(isUserOK){
 			// On peut donc créer un thread pour ce client			
-			ServerToClientThread client=new ServerToClientThread(newUser, socket);
+			ServerToClientThread client=new ServerToClientThread(newUser, socket, clientListModel);
 			dos.writeUTF(OK);  // Acquittement pour le client
 
 			// Add user
