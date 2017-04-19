@@ -288,6 +288,7 @@ public class SimpleChatFrameClient extends JFrame {
 				int rep  = JOptionPane.showConfirmDialog(null, "Voulez vous rejoindre ce salon?");
 				if (rep == 0) {
 					sendMsgRejoindreUnSalonToSend(listSalon.getSelectedValue());
+					textArea.setText("");
 				}
 				
 			}

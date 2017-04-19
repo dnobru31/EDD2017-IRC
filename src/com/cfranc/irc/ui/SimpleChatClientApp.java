@@ -1,4 +1,4 @@
-package com.cfranc.irc.ui;
+ package com.cfranc.irc.ui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
