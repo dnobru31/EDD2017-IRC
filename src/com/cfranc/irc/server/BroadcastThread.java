@@ -72,6 +72,21 @@ public class BroadcastThread extends Thread {
 		}
 	}
 	
+	private static void avertirUsersDepartDe(User newUser) {
+		User unUser;
+		ServerToClientThread threadClient;
+		// on demande au serveur de poster a tous les user (excepté le user emetteur) 
+		//  un message ADD<login> du nouvel user
+		for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+			threadClient= entry.getValue();
+			unUser = entry.getKey();
+			//threadClient.post(IfClientServerProtocol.ADD+newUser.getLogin());
+			threadClient.post(unMessageIRC.encode
+					(newUser.getLogin(),IfClientServerProtocol.DEL,"","","" ));
+		
+		}
+	}
+	
 	private static void diffuserListeUsers(ServerToClientThread newServerToClientThread) {
 		
 		System.out.println("retournerListeUsers");
@@ -229,6 +244,7 @@ public class BroadcastThread extends Thread {
 	
 	public static boolean rmClient(User oldUser, ServerToClientThread newServerToClientThread) {
 		boolean res = true;
+		System.out.println("BroadCast : rmClient");
 		if(!clientTreadsMap.containsKey(oldUser)  ){
 			res=false;
 		}
@@ -240,7 +256,7 @@ public class BroadcastThread extends Thread {
 			mouvementDansSalon(oldUser, newServerToClientThread, oldUser.getIdSalon(), IfClientServerProtocol.QUITTE_SAL );
 			
 			// c) Et on précise a tous les users restant que ce user a quitté le chat
-			//TODO  en emettant DEL a tous les user restant
+			avertirUsersDepartDe(oldUser);
 			
 			// Rien a retourner au client qui se deconnecte
 			

@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
+
 import com.cfranc.irc.IfClientServerProtocol;
 import com.cfranc.irc.ProtocoleIRC;
 
@@ -21,16 +23,19 @@ public class ServerToClientThread extends Thread{
 	
 	private ProtocoleIRC dernierMessageIRC = new ProtocoleIRC();
 	
+	DefaultListModel<String> clientListModel;
+	
 	protected ServerToClientThread() {
 		
 	}
 	
 	// Constructor en recevant en paramètre la socket gérant cette connection Serveur/client
 	// et le user qui est géré par cette connection
-	public ServerToClientThread(User user, Socket socket) {
+	public ServerToClientThread(User user, Socket socket, DefaultListModel<String> _clientListModel) {
 		super();
 		this.userCourant=user;
 		this.socket = socket;
+		this.clientListModel = _clientListModel;
 	}
 	
 	// Buffer des messages a poster
@@ -146,7 +151,23 @@ public class ServerToClientThread extends Thread{
 
 				BroadcastThread.sendMessage(userCourant,line);
 	
+	
 		}
+		
+		// Le user quitte le chat, il faut avertir tous les clients.
+		System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
+		BroadcastThread.rmClient(userCourant, this);  // US9: avertir les autres clients
+		System.out.println("element de client listModel" + clientListModel.size());
+		
+		
+		
+		if(clientListModel.contains(userCourant.getLogin())){
+			//le user entre dans le salon s'il n'y était pas déja
+			clientListModel.removeElement(userCourant.getLogin());
+			System.out.println("apres remove" + clientListModel.size());
+		}  
+		
+		
 		return done;
 	}
 	

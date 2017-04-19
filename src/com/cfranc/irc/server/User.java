@@ -40,4 +40,21 @@ public class User {
 		this.idSalon=userSalon;
 	}	
 	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (this.getLogin() == null) {
+			if (other.getLogin() != null)
+				return false;
+		} else if (!this.getLogin().equals(other.getLogin()))
+			return false;
+		return true;
+	
+	}
+	
 }
