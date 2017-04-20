@@ -157,12 +157,10 @@ public class ServerToClientThread extends Thread{
 		// Le user quitte le chat, il faut avertir tous les clients.
 		System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
 		BroadcastThread.rmClient(userCourant, this);  // US9: avertir les autres clients
-		System.out.println("element de client listModel" + clientListModel.size());
 		
-		
-		
+
 		if(clientListModel.contains(userCourant.getLogin())){
-			//le user entre dans le salon s'il n'y était pas déja
+			//On enleve le user de la liste des users sur le serveur
 			clientListModel.removeElement(userCourant.getLogin());
 			System.out.println("apres remove" + clientListModel.size());
 		}  
@@ -193,9 +191,6 @@ public class ServerToClientThread extends Thread{
 				String nomSalon = BroadcastThread.listeDesSalons.get(ancienNoSalon).getNomSalon();
 				String userPourSalonPrive = "";
 				msgQuit = dernierMessageIRC.encode(userAppelant.getLogin(), IfClientServerProtocol.QUITTE_SAL, "", nomSalon, userPourSalonPrive);
-//				msgQuit = IfClientServerProtocol.QUITTE_SAL + 
-//						userAppelant.getLogin() + IfClientServerProtocol.SEPARATOR +
-//						BroadcastThread.listeDesSalons.get(ancienNoSalon).getNomSalon();
 				traiteMouvementDansSalon(userAppelant, msgQuit,IfClientServerProtocol.QUITTE_SAL);
 			}
 			messageRetenu = traiteMouvementDansSalon(userAppelant, msg,IfClientServerProtocol.REJOINT_SAL);

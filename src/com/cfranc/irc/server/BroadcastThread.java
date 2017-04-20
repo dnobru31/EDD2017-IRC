@@ -169,7 +169,10 @@ public class BroadcastThread extends Thread {
 			// l'avertir que quelqu'un arrive
 			threadClient= entry.getValue();
 			unUser = entry.getKey();
-			if (unUser==newUser) continue; // ON avertit pas le user entrant qu'il entre dans le salon;
+			
+			// Pour raffraichir coté client on retourne finallement a l'user qu'il est entré ou sorti du salo
+			if (unUser==newUser) continue; // ON avertit pas le user entrant qu'il entre ou sort du salon;
+			
 			if (unUser.getIdSalon()== newUser.getIdSalon()) {
 				String nomSalon = listeDesSalons.get(newUser.getIdSalon()).getNomSalon();
 				threadClient.post(unMessageIRC.encode
@@ -218,6 +221,13 @@ public class BroadcastThread extends Thread {
 	
 	public static void sendInstruction(User sender, String inst){
 		Collection<ServerToClientThread> clientThreads=clientTreadsMap.values();  // tous les Threads
+		
+		
+		// Cas particulier du salon privé, il ne faut diffuser la creation du salon que pour l'emetteur et le destinataire du salon privé
+		ProtocoleIRC unMessageIRCRecu = new ProtocoleIRC();
+		// Retrouver le verbe et le user private
+		// si Creer salon et user private alors
+		//   vire de clientThreads les users autre que l'emetteur et le recepteur
 		sendMessage(inst,clientThreads);
 		System.out.println("Broadcast sendInstruction : " + inst);
 	}
@@ -234,10 +244,6 @@ public class BroadcastThread extends Thread {
 			ServerToClientThread clientThread = (ServerToClientThread) receiverClientThreadIterator.next();
 	
 			clientThread.post(msg);	
-			
-			// LstSalon.getId(sender.idSalon).archive( <meme message>)   
-			// Attention a ne pas archiver 2 fois quand on rejoue un message
-			// pour l'arrivée d'un client dans le salon
 	
 		}
 	}
@@ -265,11 +271,7 @@ public class BroadcastThread extends Thread {
 		return res ;		
 	}
 
-	public static void removeClient(User user){
-		clientTreadsMap.remove(user);
-		
-		// Il faudra aussi avertir tout le mode (généraliser addClient)
-	}
+	
 	
 	
 	// le user existe t'il déja ? (utilisé par le serveur pour accepter un client)
