@@ -171,7 +171,8 @@ public class BroadcastThread extends Thread {
 			unUser = entry.getKey();
 			
 			// Pour raffraichir coté client on retourne finallement a l'user qu'il est entré ou sorti du salo
-			if (unUser==newUser) continue; // ON avertit pas le user entrant qu'il entre ou sort du salon;
+			 if (unUser == newUser) continue;
+			
 			
 			if (unUser.getIdSalon()== newUser.getIdSalon()) {
 				String nomSalon = listeDesSalons.get(newUser.getIdSalon()).getNomSalon();

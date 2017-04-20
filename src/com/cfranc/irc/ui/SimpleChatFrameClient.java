@@ -116,7 +116,7 @@ public class SimpleChatFrameClient extends JFrame {
 
 	public void sendMessage() {
 		sender.setMsgToSend(unMessageIRC.encode
-				("<User courant>", "DISCUTE", textField.getText(), "", ""));
+				("<User Courant>", "DISCUTE", textField.getText(), "", ""));
 	}
 
 	public void sendMsgCSreationSalonToSend(String salonACreer) {

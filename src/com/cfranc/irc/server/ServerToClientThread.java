@@ -117,11 +117,25 @@ public class ServerToClientThread extends Thread{
 		boolean done = false;
 		System.out.println("ServerToClient traite donnes par le serveur" + line);
 		dernierMessageIRC.decode(line);
+		System.out.println("Verbe recu" + dernierMessageIRC.verbe);
 		if (dernierMessageIRC.verbe.startsWith("_")) {
 			traiteMsgSpecifique(userCourant,line);
 		} else
 		{
-			done = traiteMessageClassique(line);
+			if (dernierMessageIRC.verbe.equals(IfClientServerProtocol.DEL)) {
+				// On recoit d'un client le fait qu'il se deconnecte
+				// Le user quitte le chat, il faut avertir tous les clients.
+				System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
+				BroadcastThread.rmClient(userCourant, this);  // US9: avertir les autres clients
+
+
+				if(clientListModel.contains(userCourant.getLogin())){
+					//On enleve le user de la liste des users sur le serveur
+					clientListModel.removeElement(userCourant.getLogin());
+					System.out.println("apres remove" + clientListModel.size());
+				}  
+			} else {
+				done = traiteMessageClassique(line);}
 		}
 		return done;
 	}
@@ -152,18 +166,7 @@ public class ServerToClientThread extends Thread{
 				BroadcastThread.sendMessage(userCourant,line);
 	
 	
-		}
-		
-		// Le user quitte le chat, il faut avertir tous les clients.
-		System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
-		BroadcastThread.rmClient(userCourant, this);  // US9: avertir les autres clients
-		
-
-		if(clientListModel.contains(userCourant.getLogin())){
-			//On enleve le user de la liste des users sur le serveur
-			clientListModel.removeElement(userCourant.getLogin());
-			System.out.println("apres remove" + clientListModel.size());
-		}  
+		} 
 		
 		
 		return done;
@@ -192,6 +195,7 @@ public class ServerToClientThread extends Thread{
 				String userPourSalonPrive = "";
 				msgQuit = dernierMessageIRC.encode(userAppelant.getLogin(), IfClientServerProtocol.QUITTE_SAL, "", nomSalon, userPourSalonPrive);
 				traiteMouvementDansSalon(userAppelant, msgQuit,IfClientServerProtocol.QUITTE_SAL);
+				System.out.println("on envoie quitte en boucle");
 			}
 			messageRetenu = traiteMouvementDansSalon(userAppelant, msg,IfClientServerProtocol.REJOINT_SAL);
 		}
