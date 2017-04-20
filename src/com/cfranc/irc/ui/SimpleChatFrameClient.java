@@ -77,7 +77,7 @@ public class SimpleChatFrameClient extends JFrame {
 	private final ResourceAction lockAction = new LockAction();
 
 	private boolean isScrollLocked = true;
-	
+
 	private ProtocoleIRC unMessageIRC = new ProtocoleIRC();
 
 	/**
@@ -115,23 +115,32 @@ public class SimpleChatFrameClient extends JFrame {
 	}
 
 	public void sendMessage() {
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User courant>", "DISCUTE", textField.getText(), "", ""));
+		sender.setMsgToSend(unMessageIRC.encode("<User courant>", "DISCUTE", textField.getText(), "", ""));
 	}
 
 	public void sendMsgCSreationSalonToSend(String salonACreer) {
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,""));
-				//IfClientServerProtocol.AJ_SAL + salonACreer); 
+		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", IfClientServerProtocol.AJ_SAL, "", salonACreer, ""));
+		// IfClientServerProtocol.AJ_SAL + salonACreer);
 	}
 
 	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>",IfClientServerProtocol.REJOINT_SAL,"",nomDuSalon,""));
-				
-				//IfClientServerProtocol.REJOINT_SAL + nomDuSalon); 
+		sender.setMsgToSend(
+				unMessageIRC.encode("<User Courant>", IfClientServerProtocol.REJOINT_SAL, "", nomDuSalon, ""));
+
+		// LPAL
+		for (int vli = 0; vli < listModel.getSize(); vli++) {
+			String unUser = listModel.getElementAt(vli);
+			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());
+			
+				if (laFinDuUser.equals("-")) {
+					listModel.getElementAt(vli).replaceAll("-", "");
+					((DefaultListModel<String>) listModel).setElementAt(listModel.getElementAt(vli).replaceAll("-", " "),
+							vli);
+				}
+			
+		}
 	}
-	
+
 	public SimpleChatFrameClient() {
 		this(null, new DefaultListModel<String>(), new DefaultListModel<String>(),
 				SimpleChatClientApp.defaultDocumentModel());
@@ -284,13 +293,13 @@ public class SimpleChatFrameClient extends JFrame {
 		listSalon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				int rep  = JOptionPane.showConfirmDialog(null, "Voulez vous rejoindre ce salon?");
+
+				int rep = JOptionPane.showConfirmDialog(null, "Voulez vous rejoindre ce salon?");
 				if (rep == 0) {
 					sendMsgRejoindreUnSalonToSend(listSalon.getSelectedValue());
 					textArea.setText("");
 				}
-				
+
 			}
 		});
 		listSalon.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -308,7 +317,7 @@ public class SimpleChatFrameClient extends JFrame {
 			}
 		});
 		listSalon.setMinimumSize(new Dimension(150, 0));
-		
+
 	}
 
 	public JLabel getLblSender() {
@@ -348,14 +357,14 @@ public class SimpleChatFrameClient extends JFrame {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			
+
 			String res = JOptionPane.showInputDialog(null, "Veuillez saisir le nom de votre salon.",
 					"Création d'un nouveau salon", JOptionPane.QUESTION_MESSAGE);
 			if (res != null) {
 				System.out.println(res);
 				sendMsgCSreationSalonToSend(res);
 			}
-			//sendMessage();
+			// sendMessage();
 		}
 	}
 

@@ -155,9 +155,9 @@ public class ServerToClientThread extends Thread{
 		}
 		
 		// Le user quitte le chat, il faut avertir tous les clients.
-		System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
+		/*System.out.println("le user " + userCourant.getLogin() + " quitte le chat");
 		BroadcastThread.rmClient(userCourant, this);  // US9: avertir les autres clients
-		System.out.println("element de client listModel" + clientListModel.size());
+		System.out.println("element de client listModel" + clientListModel.size());*/
 		
 		
 		

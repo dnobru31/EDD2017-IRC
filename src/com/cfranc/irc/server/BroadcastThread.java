@@ -169,7 +169,8 @@ public class BroadcastThread extends Thread {
 			// l'avertir que quelqu'un arrive
 			threadClient= entry.getValue();
 			unUser = entry.getKey();
-			if (unUser==newUser) continue; // ON avertit pas le user entrant qu'il entre dans le salon;
+			
+			//if (unUser==newUser) continue; // ON avertit pas le user entrant qu'il entre dans le salon;
 			if (unUser.getIdSalon()== newUser.getIdSalon()) {
 				String nomSalon = listeDesSalons.get(newUser.getIdSalon()).getNomSalon();
 				threadClient.post(unMessageIRC.encode

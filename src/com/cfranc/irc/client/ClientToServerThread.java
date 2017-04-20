@@ -171,37 +171,42 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		receiveMessage(unMessageIRC.userEmetteur,
 				unMessageIRC.userEmetteur + " quitte le salon  " + unMessageIRC.salonCree);
 
-		// Enlever les étoiles si elles sont là .
+		// Enlever l'étoiles du unMessageIRC.userEmetteur si elles est là .
 		for (int vli = 0; vli < clientListModel.size(); vli++) {
-			
-			String vlsrt1 =clientListModel.getElementAt(vli);
-			String vlsrt2 =vlsrt1.substring(vlsrt1.length() - 1, vlsrt1.length());
-			String vlsrt3 = vlsrt1.substring(0, vlsrt1.length() - 1);
-			
-			//System.out.println(vlsrt1);
-			//System.out.println(vlsrt2);
-			//System.out.println(vlsrt3);
-			
-			if (vlsrt2.equals("*")){
-				  clientListModel.setElementAt(vlsrt3, vli);
+
+			String unUser = clientListModel.getElementAt(vli);
+			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());
+			String unUserSansEtoile = unUser.substring(0, unUser.length() - 1);
+
+			if (unUserSansEtoile.equals(unMessageIRC.userEmetteur)) {
+				if (laFinDuUser.equals("-")) {
+					clientListModel.setElementAt(unUserSansEtoile, vli);
+				}
 			}
 		}
 
-		
-		 /* //Enlever une etoile.
-		  for (int vli = 0; vli < clientListModel.size(); vli++) {
-			  if   (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) { 
-				  clientListModel.setElementAt(clientListModel.getElementAt(vli).substring(0, clientListModel.getElementAt(vli).length() - 1), vli); }
-		  }*/
-		 
+		/*
+		 * //Enlever une etoile. for (int vli = 0; vli < clientListModel.size();
+		 * vli++) { if
+		 * (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur))
+		 * { clientListModel.setElementAt(clientListModel.getElementAt(vli).
+		 * substring(0, clientListModel.getElementAt(vli).length() - 1), vli); }
+		 * }
+		 */
 
-		/*// Enlever les étoiles si elles sont là .
-		for (int vli = 0; vli < clientListModel.size(); vli++) {
-			System.out.println(clientListModel.getElementAt(vli).substring(clientListModel.getElementAt(vli).length() - 1, clientListModel.getElementAt(vli).length()));
-			if (clientListModel.getElementAt(vli).substring(clientListModel.getElementAt(vli).length() - 1, clientListModel.getElementAt(vli).length()) == "*" ){
-				 clientListModel.setElementAt(clientListModel.getElementAt(vli).substring(0, clientListModel.getElementAt(vli).length() - 1), vli);
-			}
-		}*/
+		/*
+		 * // Enlever les étoiles si elles sont là . for (int vli = 0; vli <
+		 * clientListModel.size(); vli++) {
+		 * System.out.println(clientListModel.getElementAt(vli).substring(
+		 * clientListModel.getElementAt(vli).length() - 1,
+		 * clientListModel.getElementAt(vli).length())); if
+		 * (clientListModel.getElementAt(vli).substring(clientListModel.
+		 * getElementAt(vli).length() - 1,
+		 * clientListModel.getElementAt(vli).length()) == "*" ){
+		 * clientListModel.setElementAt(clientListModel.getElementAt(vli).
+		 * substring(0, clientListModel.getElementAt(vli).length() - 1), vli); }
+		 * }
+		 */
 
 		// parcourir la liste et grasser qui est unMessageIRC.userEmetteur
 		// for (int vli = 0; vli < clientListModel.size(); vli++) {
@@ -235,17 +240,14 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		// String nomSalon = rejointMsg[1];
 
 		receiveMessage(unMessageIRC.userEmetteur,
-				unMessageIRC.userEmetteur + " rejoint le salon TEST" + unMessageIRC.salonCree);
-			
-		
-		// parcourir la liste et mettre une croix à celui qui est
-		// unMessageIRC.userEmetteur
+				unMessageIRC.userEmetteur + " rejoint le salon " + unMessageIRC.salonCree);
+
+		// parcourir la liste et mettre une croix à celui qui est unMessageIRC.userEmetteur
 		for (int vli = 0; vli < clientListModel.size(); vli++) {
 			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
 				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
 				// grisser l'indice vli
-				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "*", vli);
-				System.out.println("NNNNNNNNNNNNNNnn" + clientListModel.getElementAt(vli));
+				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "-", vli);
 			}
 		}
 
