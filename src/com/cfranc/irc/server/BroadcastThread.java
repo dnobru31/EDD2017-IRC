@@ -221,14 +221,28 @@ public class BroadcastThread extends Thread {
 	}
 	
 	public static void sendInstruction(User sender, String inst){
-		Collection<ServerToClientThread> clientThreads=clientTreadsMap.values();  // tous les Threads
+		Collection<ServerToClientThread> clientThreads=null;  
 		
 		
 		// Cas particulier du salon privé, il ne faut diffuser la creation du salon que pour l'emetteur et le destinataire du salon privé
 		ProtocoleIRC unMessageIRCRecu = new ProtocoleIRC();
-		// Retrouver le verbe et le user private
-		// si Creer salon et user private alors
-		//   vire de clientThreads les users autre que l'emetteur et le recepteur
+		unMessageIRCRecu.decode(inst);
+		if (unMessageIRCRecu.verbe.equals(IfClientServerProtocol.AJ_SAL) &&
+				(unMessageIRCRecu.userPrivate.equals(".") == false) )  {
+				// !!!  LIRE le HMAP et alimenter les 2 thread de l'emetteur et du private
+			clientThreads = new ArrayList<ServerToClientThread>();
+			for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
+				System.out.println("aj_sal privé" + entry.getKey().getLogin());
+				if (entry.getKey().getLogin().equals(unMessageIRCRecu.userEmetteur) ||
+						entry.getKey().getLogin().equals(unMessageIRCRecu.userPrivate)	)
+				{
+					clientThreads.add(entry.getValue());
+				}
+			}
+		} else
+		{ 
+			clientThreads = clientTreadsMap.values();// tous les Threads		
+		}
 		sendMessage(inst,clientThreads);
 		System.out.println("Broadcast sendInstruction : " + inst);
 	}
