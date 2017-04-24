@@ -12,7 +12,6 @@ import java.util.Scanner;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -20,7 +19,6 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import com.cfranc.irc.client.ClientToServerThread;
-import com.cfranc.irc.server.ClientConnectThread;
 
 public class SimpleChatClientApp {
     static String[] ConnectOptionNames = { "Connect" };	
@@ -201,5 +199,7 @@ public class SimpleChatClientApp {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 }

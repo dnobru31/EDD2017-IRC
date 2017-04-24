@@ -117,7 +117,6 @@ public class ServerToClientThread extends Thread{
 		boolean done = false;
 		System.out.println("ServerToClient traite donnes par le serveur" + line);
 		dernierMessageIRC.decode(line);
-		System.out.println("Verbe recu" + dernierMessageIRC.verbe);
 		if (dernierMessageIRC.verbe.startsWith("_")) {
 			traiteMsgSpecifique(userCourant,line);
 		} else

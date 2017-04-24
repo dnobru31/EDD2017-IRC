@@ -21,10 +21,10 @@ public class BroadcastThread extends Thread {
 		// On synchronise les différents thread !! Cyril
 		Collections.synchronizedMap(clientTreadsMap);
 	}
-
-	public static SalonLst listeDesSalons = new SalonLst();
-
-	public static String dernierMessageEnvoye = ""; // pour Test
+	
+	public static SalonLst listeDesSalons=new SalonLst();
+	
+	public static String dernierMessageEnvoye=""; // pour Test
 	private static ProtocoleIRC unMessageIRC = new ProtocoleIRC();
 
 	// Ajout d'un client si existe pas déja
