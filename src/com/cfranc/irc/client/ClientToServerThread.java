@@ -235,7 +235,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		// String nomSalon = rejointMsg[1];
 
 		receiveMessage(unMessageIRC.userEmetteur,
-				unMessageIRC.userEmetteur + " rejoint le salon TEST" + unMessageIRC.salonCree);
+				unMessageIRC.userEmetteur + " rejoint le salon " + unMessageIRC.salonCree);
 			
 		
 		// parcourir la liste et mettre une croix à celui qui est
@@ -290,9 +290,10 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		// envoyer verbe + login + message
 		// sinon
 		// envoyer login suivi de message
-		System.out.println("setMsgtoSend de clienttoserver");
+		System.out.println("setMsgtoSend de clienttoserver" + _msgToSend);
 
-		_msgToSend = _msgToSend.replace("<User courant>", this.login);
+		_msgToSend = _msgToSend.replace("<User Courant>", this.login);
+		
 		// L'interface ne connaissant pas le login courant
 		// "<User courant>" est remplacé par le login
 		this.msgToSend = _msgToSend;
@@ -303,6 +304,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 	public void setMsgToSend(String _verbe, String _commentaire, String _salon, String _userPrivate) {
 		this.msgToSend = unMessageIRC.encode(this.login, _verbe, _commentaire, _salon, _userPrivate);
+		
 	}
 
 	// Pousser le message en attente sur le flux de sortie
@@ -321,7 +323,8 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 	public void quitServer() throws IOException {
 		// Pousser un message DEL sur le flux de sortie vers le serveur
-		streamOut.writeUTF(IfClientServerProtocol.DEL + login);
+		String messageEncode = unMessageIRC.encode(login,IfClientServerProtocol.DEL,"","","" );
+		streamOut.writeUTF(messageEncode);
 		streamOut.flush();
 		done = true; // Pour quitter la boucle et libérer les ressources
 	}

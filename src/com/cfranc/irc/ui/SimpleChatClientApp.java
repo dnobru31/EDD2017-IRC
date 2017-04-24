@@ -95,17 +95,21 @@ public class SimpleChatClientApp {
 			public void windowDeactivated(WindowEvent e) {
 				// TODO Auto-generated method stub
 				
+				
 			}
 			
 			@Override
 			public void windowClosing(WindowEvent e) {
-				// TODO Auto-generated method stub
+				
+				System.out.println("window closing");
+				quitApp(SimpleChatClientApp.this);
 				
 			}
 			
 			@Override
 			public void windowClosed(WindowEvent e) {
 				quitApp(SimpleChatClientApp.this);
+				System.out.println("window closed");
 			}
 			
 			@Override
@@ -173,12 +177,16 @@ public class SimpleChatClientApp {
 			
 		});
 		
+		
+		
+		// On vient lire la console pour pouvoir quitter le client en tapant .bye
+		// DEPUIS LA CONSOLE
 		Scanner sc=new Scanner(System.in);
 		String line="";
 		while(!line.equals(".bye")){
+			
 			line=sc.nextLine();			
 		}
-		
 		quitApp(app);
 	}
 

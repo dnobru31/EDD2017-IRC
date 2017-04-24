@@ -116,12 +116,15 @@ public class SimpleChatFrameClient extends JFrame {
 
 	public void sendMessage() {
 		sender.setMsgToSend(unMessageIRC.encode
-				("<User courant>", "DISCUTE", textField.getText(), "", ""));
+				("<User Courant>", "DISCUTE", textField.getText(), "", ""));
 	}
 
 	public void sendMsgCSreationSalonToSend(String salonACreer) {
+		String loginUserPrivate="" ; //"guest";  // Il suffit de recevoir qqchose
+		// pour que le message de creation de salon ne soit partagé
+		// qu'entre l'emetteur et le private
 		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,""));
+				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,loginUserPrivate));
 				//IfClientServerProtocol.AJ_SAL + salonACreer); 
 	}
 
