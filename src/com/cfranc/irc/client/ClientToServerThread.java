@@ -1,5 +1,8 @@
 package com.cfranc.irc.client;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -9,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
@@ -154,7 +158,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			// String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
 			// String user=userMsg[1];
 			receiveMessage(unMessageIRC.userEmetteur, unMessageIRC.commentaire);
-		}
+			}
 	}
 
 	private void traiterQuitterSalon(String line) {
@@ -399,4 +403,6 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		return res;
 	}
 
+
+	 
 }
