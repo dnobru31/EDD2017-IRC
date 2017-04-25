@@ -144,36 +144,33 @@ public class SimpleChatFrameClient extends JFrame {
 		}
 	}
 
-
 	public void sendMessage() {
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>", "DISCUTE", textField.getText(), "", ""));
-
+		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", "DISCUTE", textField.getText(), "", ""));
 
 	}
 
 	public void sendMsgCSreationSalonToSend(String salonACreer) {
 
-		String loginUserPrivate="" ; //"guest";  // Il suffit de recevoir qqchose
+		String loginUserPrivate = ""; // "guest"; // Il suffit de recevoir
+										// qqchose
 		// pour que le message de creation de salon ne soit partagé
 		// qu'entre l'emetteur et le private
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,loginUserPrivate));
-				//IfClientServerProtocol.AJ_SAL + salonACreer); 
+		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", IfClientServerProtocol.AJ_SAL, "", salonACreer,
+				loginUserPrivate));
+		// IfClientServerProtocol.AJ_SAL + salonACreer);
 
 	}
 
 	public void sendMsgCSreationSalonPriveToSend(String userDestinataire) {
 		// pour que le message de creation de salon ne soit partagé
 		// qu'entre l'emetteur et le private
-		String salonACreer ;
-		salonACreer = "Salon privé 	avec " + userDestinataire;
-		sender.setMsgToSend(unMessageIRC.encode
-				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,userDestinataire));
-			
+		String salonACreer;
+		salonACreer = "<User Courant>_avec_" + userDestinataire;
+		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", IfClientServerProtocol.AJ_SAL, "", salonACreer,
+				userDestinataire));
 
 	}
-	
+
 	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
 		sender.setMsgToSend(
 				unMessageIRC.encode("<User Courant>", IfClientServerProtocol.REJOINT_SAL, "", nomDuSalon, ""));
@@ -298,39 +295,23 @@ public class SimpleChatFrameClient extends JFrame {
 
 		JTextPane textArea = new JTextPane((StyledDocument) documentModel);
 
-				
 		textArea.setEnabled(true);
 
-		
-		//LPAL
-		// gerer les click sur ce composant
-		// textArea.addMouseListener(new MouseAdapter()
 		textArea.addFocusListener(new FocusListener() {
-			
-			/*public void mouseClicked(MouseEvent me) {
-				javax.swing.JOptionPane.showMessageDialog(null,
-						"les modification dans cette zones ne seront pas sauvegardées.", "Information",
-						JOptionPane.INFORMATION_MESSAGE);
-			}*/
-
 			@Override
 			public void focusGained(FocusEvent e) {
 				javax.swing.JOptionPane.showMessageDialog(null,
 						"les modification dans cette zones ne sont pas autorisées.", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
 				textField.requestFocus();
-
 			}
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				
 			}
 
 		});
 
-		
-		
 		JScrollPane scrollPaneText = new JScrollPane(textArea);
 
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -361,17 +342,12 @@ public class SimpleChatFrameClient extends JFrame {
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				//String res = JOptionPane.showInputDialog(null, "Veuillez saisir le nom de votre salon.",
-				//		"Création d'un salon privé avec :", JOptionPane.QUESTION_MESSAGE);
-				//if (res != null) {
-				String userClique ="guest";
-						sendMsgCSreationSalonPriveToSend(userClique);
-				//}
-				
-				
+				if (JOptionPane.showConfirmDialog(null, "Voulez vous créer un salon privé avec " + list.getSelectedValue()) == 0) {
+					sendMsgCSreationSalonPriveToSend(list.getSelectedValue());
+				}
 			}
 		});
+		
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel_3.add(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -497,7 +473,5 @@ public class SimpleChatFrameClient extends JFrame {
 			}
 		});
 	}
-
-
 
 }
