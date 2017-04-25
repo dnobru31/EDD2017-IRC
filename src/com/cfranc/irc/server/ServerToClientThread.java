@@ -251,7 +251,8 @@ public class ServerToClientThread extends Thread{
 			System.out.println("ServerToClient: " + nomUser + " ajoute " + nomSalon);
 			if (!BroadcastThread.listeDesSalons.add(nomSalon)) {
 				//  Si impossible retourner KO au client
-				post("KO");
+				//post("KO");
+				post(dernierMessageIRC.encode(nomUser, "KO", "", "", ""));
 				messageRetenu = false; // on ne le diffusera pas a tout le monde
 			} else
 			{
