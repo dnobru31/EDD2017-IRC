@@ -30,8 +30,7 @@ public class BroadcastThread extends Thread {
 	// Ajout d'un client si existe pas déja
 	// On recoit un user et le thread qui lui a été attribué par le serveur
 
-	// TODO => addclientTosalon( en ajoutant un 3eme arguement salon a 0 par
-	// défaut)
+	
 	public static boolean addClient(User newUser, ServerToClientThread newServerToClientThread) {
 		boolean res = true;
 		if (clientTreadsMap.containsKey(newUser)) {
@@ -41,14 +40,13 @@ public class BroadcastThread extends Thread {
 			avertirUserMouvement(newUser, IfClientServerProtocol.ADD);
 			clientTreadsMap.put(newUser, newServerToClientThread);
 			diffuserListeUsers(newServerToClientThread);
-			// On envoie au nouvel User tous les salons déja crées
+			// b) On envoie au nouvel User tous les salons déja crées
 			emettreListeSalonsAuClient(newServerToClientThread);
 
-			newUser.setIdSalon(-1);// Initialisé sans salon pour ne pas envoyer
-									// qu'on
-			// quittera ce salon en entrant la 1ere fois sur le salon 0
+			newUser.setIdSalon(0);// Initialisé sur salon général
+									
 
-			// b) on précise qu'il entre dans le salon général
+			// c) on précise qu'il entre dans le salon général
 			mouvementDansSalon(newUser, newServerToClientThread, 0, IfClientServerProtocol.AJ_SAL);
 
 		}
@@ -64,7 +62,6 @@ public class BroadcastThread extends Thread {
 			threadClient = entry.getValue();
 			unUser = entry.getKey();
 
-			// threadClient.post(IfClientServerProtocol.ADD+newUser.getLogin());
 			threadClient.post(unMessageIRC.encode(newUser.getLogin(), typeMouvement, "", "", ""));
 
 		}
@@ -73,34 +70,32 @@ public class BroadcastThread extends Thread {
 
 	private static void diffuserListeUsers(ServerToClientThread newServerToClientThread) {
 
-		System.out.println("retournerListeUsers");
+		
 		// On retourne au nouveau thread tous les users existants
 		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
 			newServerToClientThread
 					.post(unMessageIRC.encode(entry.getKey().getLogin(), IfClientServerProtocol.ADD, "", "", ""));
-			// IfClientServerProtocol.ADD+entry.getKey().getLogin());
 		}
 	}
 
 	public static boolean mouvementDansSalon(User newUser, ServerToClientThread newServerToClientThread,
 			int numeroSalon, String typeMouvement) {
 		boolean res = true;
-
+		System.out.println("BroadCast:mouvement dans salon");
 		// Appelé pour rejoindre ou quitter un salon
-
-		// On memorise que ce User est dans ce salon
-		newUser.setIdSalon(numeroSalon);
+		if (typeMouvement.equals(IfClientServerProtocol.REJOINT_SAL)) {
+			// On memorise que ce User est dans ce salon
+			newUser.setIdSalon(numeroSalon);
+		}
 		avertirMembresDuSalonArriveeOuDepartDe(newUser, typeMouvement);
 
-		System.out.println("BroadCast mouvement dans salon");
+		
 
 		if (typeMouvement.equals(IfClientServerProtocol.REJOINT_SAL)) {
 			retournerListeMembresDuSalonVers(newUser, newServerToClientThread);
 			retournerArchiveDuSalonVers(newServerToClientThread, numeroSalon);
 			// Et lui retourner les archives du salon dans lequel il entre
-			// TODO bruno, faire une fonction qui va envoyer un a un les
-			// messages
-			// mis en archive pour le salon
+			
 		}
 		return res;
 	}
@@ -112,7 +107,7 @@ public class BroadcastThread extends Thread {
 		// la liste de tous les login presents dans le salon (y compris lui
 		// meme)
 
-		System.out.println("retournerListeMembresDuSalon");
+		
 
 		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
 			// si entry.getvalue().user est sur le salon alors renvoyer a celui
@@ -121,6 +116,7 @@ public class BroadcastThread extends Thread {
 			if (unUser.getIdSalon() == newUser.getIdSalon()) {
 				// si entry.getvalue().user est sur le salon alors renvoyer a
 				// celui qui entre.
+				System.out.println("BroadCast: retournerListeMembresDuSalon" + unUser.getLogin());
 				String nomSalon = listeDesSalons.get(newUser.getIdSalon()).getNomSalon();
 				newServerToClientThread.post(
 						unMessageIRC.encode(unUser.getLogin(), IfClientServerProtocol.REJOINT_SAL, "", nomSalon, ""));
@@ -132,10 +128,9 @@ public class BroadcastThread extends Thread {
 		User unUser;
 		// On demande au serveur de poster au nouvel user (thread recu en
 		// paramétre)
-		// la liste de tous les login presents dans le salon (y compris lui
-		// meme)
+		// la liste de tous les messages archivés pour le salon courant
 
-		System.out.println("retournerarchiveDuSalon");
+		
 		ArrayList<String> unHisto = listeDesSalons.get(numeroSalon).historique;
 		for (int i = 0; i < unHisto.size(); i++) {
 			newServerToClientThread.post(unHisto.get(i));
@@ -148,26 +143,22 @@ public class BroadcastThread extends Thread {
 		ServerToClientThread threadClient;
 		// on demande au serveur de poster a tous les user (excepté le user
 		// emetteur)
-		// un message ADD<login> du nouvel user
+		// un message precisant si on rejoint ou quitte un salon
 		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
 			// si le client courant est sur le salon en paramètre alors
 			// l'avertir que quelqu'un arrive
-			// si le client courant est sur le salon en paramètre alors
-			// l'avertir que quelqu'un arrive
+			
 			threadClient = entry.getValue();
 			unUser = entry.getKey();
 
-			
-			// Pour raffraichir coté client on retourne finallement a l'user qu'il est entré ou sorti du salo
 			 if (unUser == newUser) continue;
-			
 			
 			if (unUser.getIdSalon()== newUser.getIdSalon()) {
 
 				String nomSalon = listeDesSalons.get(newUser.getIdSalon()).getNomSalon();
 				threadClient.post(unMessageIRC.encode(newUser.getLogin(), typeMouvement, "", nomSalon, ""));
-				// typeMouvement+newUser.getLogin()+
-				// IfClientServerProtocol.SEPARATOR + nomSalon);
+				System.out.println("Broadcast, arriveeOuDepartDansSalon " + typeMouvement + " "+ unUser.getLogin() + ": salon = " + unUser.getIdSalon() + "/" + newUser.getIdSalon() );
+				
 			}
 
 		}
@@ -215,15 +206,17 @@ public class BroadcastThread extends Thread {
 		Collection<ServerToClientThread> clientThreads=null;  
 		
 		
-		// Cas particulier du salon privé, il ne faut diffuser la creation du salon que pour l'emetteur et le destinataire du salon privé
 		ProtocoleIRC unMessageIRCRecu = new ProtocoleIRC();
 		unMessageIRCRecu.decode(inst);
 		if (unMessageIRCRecu.verbe.equals(IfClientServerProtocol.AJ_SAL) &&
 				(unMessageIRCRecu.userPrivate.equals(".") == false) )  {
-				// !!!  LIRE le HMAP et alimenter les 2 thread de l'emetteur et du private
+			// Cas particulier du salon privé, il ne faut diffuser la creation du salon que 
+			//pour l'emetteur et le destinataire du salon privé
+			
+			// !!!  LIRE le HMAP et alimenter les 2 thread de l'emetteur et du private
 			clientThreads = new ArrayList<ServerToClientThread>();
 			for(Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-				System.out.println("aj_sal privé" + entry.getKey().getLogin());
+				System.out.println("BroadCast:aj_sal privé" + entry.getKey().getLogin());
 				if (entry.getKey().getLogin().equals(unMessageIRCRecu.userEmetteur) ||
 						entry.getKey().getLogin().equals(unMessageIRCRecu.userPrivate)	)
 				{
@@ -239,16 +232,11 @@ public class BroadcastThread extends Thread {
 		System.out.println("Broadcast sendInstruction : " + inst);
 	}
 
-	// envoyer à chaque thread existant, le message en paramètre en précisant
+	// envoyer à chaque thread recus en parametre, le message en paramètre en précisant
 	// l'expéditeur
 	private static void sendMessage(String msg, Collection<ServerToClientThread> aEnvoyer) {
 		dernierMessageEnvoye = msg;
-		// dernierUserEnvoye = sender;
-		// clientTreads, est le tableau des thread (on a recupére que les values
-		// dans hashMap)
-		// Collection<ServerToClientThread>
-		// clientTreads=clientTreadsMap.values();
-
+			
 		Iterator<ServerToClientThread> receiverClientThreadIterator = aEnvoyer.iterator();
 		while (receiverClientThreadIterator.hasNext()) {
 			ServerToClientThread clientThread = (ServerToClientThread) receiverClientThreadIterator.next();

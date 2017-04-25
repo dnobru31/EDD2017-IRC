@@ -82,5 +82,14 @@ public class ServerToClientThreadTest {
 		//assertEquals(nomUser, BroadcastThread.dernierUserEnvoye.getLogin());
 	}
 
+	// On cree user1 et user2 user3
+	// On cree le salon1, user1 et user2 rejoigne le salon 1
+	// User1 ecrit 'bonjour',  
+	// Asserts : Seul user1 et user2 recoivent le message
+	//			La liste des users  a bien '-' en fin de ligne pour user1 et user2
+	//  		User3 a bien recu que le salon S1 a été crée
+	
+	//  user2 repond 'ca va'
+	// User3 rejoint S1, il doit recevoir l'historique 'bonjour' et 'ca va'
 
 }
