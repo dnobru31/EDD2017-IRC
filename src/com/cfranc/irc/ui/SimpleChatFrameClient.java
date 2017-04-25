@@ -86,6 +86,7 @@ import java.awt.event.ContainerAdapter;
 import java.awt.event.ContainerEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.awt.SystemColor;
 
 public class SimpleChatFrameClient extends JFrame {
 
@@ -162,6 +163,17 @@ public class SimpleChatFrameClient extends JFrame {
 
 	}
 
+	public void sendMsgCSreationSalonPriveToSend(String userDestinataire) {
+		// pour que le message de creation de salon ne soit partagé
+		// qu'entre l'emetteur et le private
+		String salonACreer ;
+		salonACreer = "Salon privé 	avec " + userDestinataire;
+		sender.setMsgToSend(unMessageIRC.encode
+				("<User Courant>",IfClientServerProtocol.AJ_SAL,"",salonACreer,userDestinataire));
+			
+
+	}
+	
 	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
 		sender.setMsgToSend(
 				unMessageIRC.encode("<User Courant>", IfClientServerProtocol.REJOINT_SAL, "", nomDuSalon, ""));
@@ -231,6 +243,7 @@ public class SimpleChatFrameClient extends JFrame {
 		JButton button = toolBar.add(sendAction);
 
 		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(SystemColor.desktop);
 		panel_2.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.add(panel_2, BorderLayout.WEST);
 		panel_2.setLayout(new BorderLayout(0, 0));
@@ -345,6 +358,20 @@ public class SimpleChatFrameClient extends JFrame {
 		panel_3.setLayout(new GridLayout(0, 1, 0, 0));
 
 		JList<String> list = new JList<String>(listModel);
+		list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				//String res = JOptionPane.showInputDialog(null, "Veuillez saisir le nom de votre salon.",
+				//		"Création d'un salon privé avec :", JOptionPane.QUESTION_MESSAGE);
+				//if (res != null) {
+				String userClique ="guest";
+						sendMsgCSreationSalonPriveToSend(userClique);
+				//}
+				
+				
+			}
+		});
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel_3.add(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
