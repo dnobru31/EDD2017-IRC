@@ -88,6 +88,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 	// text et italique pour le user
 	// REFACTOR => MiseEnPageMessage
 	public void receiveMessage(String user, String line) {
+		if (user.equals("Admin")) return;
 		Style styleBI = ((StyledDocument) documentModel).getStyle(SimpleChatClientApp.BOLD_ITALIC);
 		Style styleGP = ((StyledDocument) documentModel).getStyle(SimpleChatClientApp.GRAY_PLAIN);
 
@@ -182,7 +183,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			if (clientListModel.contains(delUser)) {
 				// le user quitte le salon s'il y était
 				clientListModel.removeElement(delUser);
-				receiveMessage(delUser, " quite le salon !");
+				receiveMessage(delUser, " quitte le salon !");
 			}
 		} else if (unMessageIRC.verbe.equals(IfClientServerProtocol.AJ_SAL)) {
 			traiterAjoutSalon(line);
@@ -191,24 +192,13 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		} else if (unMessageIRC.verbe.equals(IfClientServerProtocol.QUITTE_SAL)) {
 			traiterQuitterSalon(line);
 		} else {
-			// A defaut, c'est un message 'chat' du type '#user#message'
-			// String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
-			// String user=userMsg[1];
+			
 			receiveMessage(unMessageIRC.userEmetteur, unMessageIRC.commentaire);
 		}
 	}
 
 	private void traiterQuitterSalon(String line) {
-		// Message recu commence par <REJOINT_SAL>, un user rejoint un salon
-		// Si c'est le salon de l'utilisateur courant alors on peut l'ajouter a
-		// la liste des users
-		// String reste =
-		// line.substring(IfClientServerProtocol.QUITTE_SAL.length());
-		// String[] quitteMsg=reste.split(IfClientServerProtocol.SEPARATOR);
-		// String nomUser=quitteMsg[0];
-		// String nomSalon = quitteMsg[1];
-		//
-
+		
 		receiveMessage(unMessageIRC.userEmetteur,
 				unMessageIRC.userEmetteur + " quitte le salon  " + unMessageIRC.salonCree);
 
