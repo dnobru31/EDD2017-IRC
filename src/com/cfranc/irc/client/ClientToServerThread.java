@@ -220,7 +220,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			String unUserSansEtoile = unUser.substring(0, unUser.length() - 1);
 
 			if (unUserSansEtoile.equals(unMessageIRC.userEmetteur)) {
-				if (laFinDuUser.equals("-")) {
+				if (laFinDuUser.equals("=")) {
 					clientListModel.setElementAt(unUserSansEtoile, vli);
 				}
 			}
@@ -290,7 +290,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
 				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
 				// grisser l'indice vli
-				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "-", vli);
+				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "=", vli);
 			}
 		}
 

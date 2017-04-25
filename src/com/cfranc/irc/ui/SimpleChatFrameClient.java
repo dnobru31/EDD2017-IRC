@@ -175,15 +175,13 @@ public class SimpleChatFrameClient extends JFrame {
 		sender.setMsgToSend(
 				unMessageIRC.encode("<User Courant>", IfClientServerProtocol.REJOINT_SAL, "", nomDuSalon, ""));
 
-		// LPAL
 		for (int vli = 0; vli < listModel.getSize(); vli++) {
 			String unUser = listModel.getElementAt(vli);
 			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());
 
-			if (laFinDuUser.equals("-")) {
-				listModel.getElementAt(vli).replaceAll("-", "");
-				((DefaultListModel<String>) listModel).setElementAt(listModel.getElementAt(vli).replaceAll("-", " "),
-						vli);
+			if (laFinDuUser.equals("=")) {
+				listModel.getElementAt(vli).replaceAll("=", "");
+				((DefaultListModel<String>) listModel).setElementAt(listModel.getElementAt(vli).replaceAll("=", " "),						vli);
 			}
 
 		}
@@ -230,6 +228,7 @@ public class SimpleChatFrameClient extends JFrame {
 		JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem(lockAction);
 		mnOutils.add(chckbxmntmNewCheckItem);
 		contentPane = new JPanel();
+		contentPane.setBackground(SystemColor.desktop);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
@@ -238,6 +237,10 @@ public class SimpleChatFrameClient extends JFrame {
 		contentPane.add(toolBar, BorderLayout.NORTH);
 
 		JButton button = toolBar.add(sendAction);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(SystemColor.desktop);
@@ -246,10 +249,12 @@ public class SimpleChatFrameClient extends JFrame {
 		panel_2.setLayout(new BorderLayout(0, 0));
 
 		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(SystemColor.desktop);
 		panel_2.add(panel_1, BorderLayout.SOUTH);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel = new JPanel();
+		panel.setBackground(SystemColor.desktop);
 		panel_1.add(panel);
 
 		lblSender = new JLabel(Messages.getString("SimpleChatFrameClient.lblSender.text")); //$NON-NLS-1$
