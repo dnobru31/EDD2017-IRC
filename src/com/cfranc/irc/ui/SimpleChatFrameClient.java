@@ -285,122 +285,7 @@ public class SimpleChatFrameClient extends JFrame {
 
 		JTextPane textArea = new JTextPane((StyledDocument) documentModel);
 
-		// LPAL ICON
-		// textArea.setEditorKit(new StyledEditorKit());
-		// getContentPane().add(textArea, BorderLayout.CENTER);
-		SimpleAttributeSet attrs = new SimpleAttributeSet();
-		StyleConstants.setIcon(attrs, getImageHappy());
-		textArea.addCaretListener(new CaretListener() {
-		public void caretUpdate(CaretEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							StyledDocument doc = (StyledDocument) textArea.getDocument();
-							String text = doc.getText(0, textArea.getDocument().getLength());
-							int index = text.indexOf(":)");
-							int start = 0;
-							while (index > -1) {
-								Element el = doc.getCharacterElement(index);
-								if (StyleConstants.getIcon(el.getAttributes()) == null) {
-									doc.remove(index, 2);
-									SimpleAttributeSet attrs = new SimpleAttributeSet();
-									StyleConstants.setIcon(attrs, getImageHappy());
-									doc.insertString(index, ":)", attrs);
-								}
-								start = index + 2;
-								index = text.indexOf(":)", start);
-							}
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						
-						try {
-							StyledDocument doc = (StyledDocument) textArea.getDocument();
-							String text = doc.getText(0, textArea.getDocument().getLength());
-							int index = text.indexOf(":(");
-							int start = 0;
-							while (index > -1) {
-								Element el = doc.getCharacterElement(index);
-								if (StyleConstants.getIcon(el.getAttributes()) == null) {
-									doc.remove(index, 2);
-									SimpleAttributeSet attrs = new SimpleAttributeSet();
-									StyleConstants.setIcon(attrs, getImageSad());
-									doc.insertString(index, ":(", attrs);
-								}
-								start = index + 2;
-								index = text.indexOf(":(", start);
-							}
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						
-					}
-				});
-
-			}
-
-		});
-			
-		documentModel.addDocumentListener(new DocumentListener(){
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				System.out.println("insertUpdate");
 				
-				try {
-					StyledDocument doc = (StyledDocument) textArea.getDocument();
-					String text = doc.getText(0, textArea.getDocument().getLength());
-					int index = text.indexOf(":)");
-					int start = 0;
-					while (index > -1) {
-						Element el = doc.getCharacterElement(index);
-						if (StyleConstants.getIcon(el.getAttributes()) == null) {
-							doc.remove(index, 2);
-							SimpleAttributeSet attrs = new SimpleAttributeSet();
-							StyleConstants.setIcon(attrs, getImageHappy());
-							doc.insertString(index, ":)", attrs);
-						}
-						start = index + 2;
-						index = text.indexOf(":)", start);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				
-				try {
-					StyledDocument doc = (StyledDocument) textArea.getDocument();
-					String text = doc.getText(0, textArea.getDocument().getLength());
-					int index = text.indexOf(":(");
-					int start = 0;
-					while (index > -1) {
-						Element el = doc.getCharacterElement(index);
-						if (StyleConstants.getIcon(el.getAttributes()) == null) {
-							doc.remove(index, 2);
-							SimpleAttributeSet attrs = new SimpleAttributeSet();
-							StyleConstants.setIcon(attrs, getImageSad());
-							doc.insertString(index, ":(", attrs);
-						}
-						start = index + 2;
-						index = text.indexOf(":(", start);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				System.out.println("removeUpdate");
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				System.out.println("changedUpdate");
-				
-			}
-			
-		});
-		
 		textArea.setEnabled(true);
 
 		
@@ -417,10 +302,10 @@ public class SimpleChatFrameClient extends JFrame {
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				/*javax.swing.JOptionPane.showMessageDialog(null,
+				javax.swing.JOptionPane.showMessageDialog(null,
 						"les modification dans cette zones ne sont pas autorisées.", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
-				textField.requestFocus();*/
+				textField.requestFocus();
 
 			}
 
@@ -586,26 +471,6 @@ public class SimpleChatFrameClient extends JFrame {
 		});
 	}
 
-	// LPAL ICON
-	protected ImageIcon getImageSad() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.getGraphics();
-		g.setColor(Color.red);
-		g.drawOval(0, 0, 14, 14);
-		g.drawLine(4, 9, 9, 9);
-		g.drawOval(4, 4, 1, 1);
-		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
-	}
-	protected ImageIcon getImageHappy() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.getGraphics();
-		g.setColor(Color.green);
-		g.drawOval(0, 0, 14, 14);
-		g.drawLine(4, 9, 9, 9);
-		g.drawOval(4, 4, 1, 1);
-		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
-	}
+
 
 }

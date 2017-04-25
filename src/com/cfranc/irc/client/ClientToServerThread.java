@@ -15,7 +15,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import com.cfranc.irc.IfClientServerProtocol;
@@ -87,6 +90,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 	public void receiveMessage(String user, String line) {
 		Style styleBI = ((StyledDocument) documentModel).getStyle(SimpleChatClientApp.BOLD_ITALIC);
 		Style styleGP = ((StyledDocument) documentModel).getStyle(SimpleChatClientApp.GRAY_PLAIN);
+
 		receiveMessage(user, line, styleBI, styleGP);
 	}
 
@@ -116,6 +120,39 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			// On ajoute en fin de documentModel, le SenderUser et son message
 			documentModel.insertString(documentModel.getLength(), user + " : ", styleBI);
 			documentModel.insertString(documentModel.getLength(), line + "\n", styleGP);
+
+			// LPAL ICON
+			try {
+
+				int index = line.indexOf(":)");
+				int start = 0;
+				while (index > -1) {
+					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
+					SimpleAttributeSet attrs = new SimpleAttributeSet();
+					StyleConstants.setIcon(attrs, getImageHappy());
+					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ":)", attrs);
+					start = index + 2;
+					index = line.indexOf(":)", start);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			try {
+
+				int index = line.indexOf(":(");
+				int start = 0;
+				while (index > -1) {
+					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
+					SimpleAttributeSet attrs = new SimpleAttributeSet();
+					StyleConstants.setIcon(attrs, getImageSad());
+					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ":(", attrs);
+					start = index + 2;
+					index = line.indexOf(":(", start);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
 		} catch (BadLocationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -158,7 +195,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			// String[] userMsg=line.split(IfClientServerProtocol.SEPARATOR);
 			// String user=userMsg[1];
 			receiveMessage(unMessageIRC.userEmetteur, unMessageIRC.commentaire);
-			}
+		}
 	}
 
 	private void traiterQuitterSalon(String line) {
@@ -249,7 +286,6 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		// parcourir la liste et mettre une croix à celui qui est
 		// unMessageIRC.userEmetteur
 
-
 		for (int vli = 0; vli < clientListModel.size(); vli++) {
 			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
 				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
@@ -302,7 +338,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		System.out.println("setMsgtoSend de clienttoserver" + _msgToSend);
 
 		_msgToSend = _msgToSend.replace("<User Courant>", this.login);
-		
+
 		// L'interface ne connaissant pas le login courant
 		// "<User courant>" est remplacé par le login
 		this.msgToSend = _msgToSend;
@@ -313,7 +349,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 	public void setMsgToSend(String _verbe, String _commentaire, String _salon, String _userPrivate) {
 		this.msgToSend = unMessageIRC.encode(this.login, _verbe, _commentaire, _salon, _userPrivate);
-		
+
 	}
 
 	// Pousser le message en attente sur le flux de sortie
@@ -332,7 +368,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 	public void quitServer() throws IOException {
 		// Pousser un message DEL sur le flux de sortie vers le serveur
-		String messageEncode = unMessageIRC.encode(login,IfClientServerProtocol.DEL,"","","" );
+		String messageEncode = unMessageIRC.encode(login, IfClientServerProtocol.DEL, "", "", "");
 		streamOut.writeUTF(messageEncode);
 		streamOut.flush();
 		done = true; // Pour quitter la boucle et libérer les ressources
@@ -410,5 +446,26 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 	}
 
 
-	 
+	protected ImageIcon getImageSad() {
+		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.getGraphics();
+		g.setColor(Color.red);
+		g.drawOval(0, 0, 14, 14);
+		g.drawLine(4, 9, 9, 9);
+		g.drawOval(4, 4, 1, 1);
+		g.drawOval(10, 4, 1, 1);
+		return new ImageIcon(bi);
+	}
+
+	protected ImageIcon getImageHappy() {
+		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.getGraphics();
+		g.setColor(Color.green);
+		g.drawOval(0, 0, 14, 14);
+		g.drawLine(4, 9, 9, 9);
+		g.drawOval(4, 4, 1, 1);
+		g.drawOval(10, 4, 1, 1);
+		return new ImageIcon(bi);
+	}
+
 }
