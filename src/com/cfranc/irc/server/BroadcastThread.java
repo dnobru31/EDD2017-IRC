@@ -93,7 +93,7 @@ public class BroadcastThread extends Thread {
 
 		if (typeMouvement.equals(IfClientServerProtocol.REJOINT_SAL)) {
 			retournerListeMembresDuSalonVers(newUser, newServerToClientThread);
-			retournerArchiveDuSalonVers(newServerToClientThread, numeroSalon);
+			listeDesSalons.get(numeroSalon).retournerArchiveDuSalonVers(newUser.getLogin(),newServerToClientThread);
 			// Et lui retourner les archives du salon dans lequel il entre
 			
 		}
@@ -124,19 +124,7 @@ public class BroadcastThread extends Thread {
 		}
 	}
 
-	private static void retournerArchiveDuSalonVers(ServerToClientThread newServerToClientThread, int numeroSalon) {
-		User unUser;
-		// On demande au serveur de poster au nouvel user (thread recu en
-		// paramétre)
-		// la liste de tous les messages archivés pour le salon courant
 
-		
-		ArrayList<String> unHisto = listeDesSalons.get(numeroSalon).historique;
-		for (int i = 0; i < unHisto.size(); i++) {
-			newServerToClientThread.post(unHisto.get(i));
-		}
-
-	}
 
 	private static void avertirMembresDuSalonArriveeOuDepartDe(User newUser, String typeMouvement) {
 		User unUser;
@@ -175,12 +163,26 @@ public class BroadcastThread extends Thread {
 		String unMessage;
 		Collection<ServerToClientThread> clientThreads = new ArrayList<ServerToClientThread>();
 		ServerToClientThread unThread;
+		User userCourant;
 		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
-			if (entry.getKey().getIdSalon() == sender.getIdSalon()) {
+			
+			userCourant = entry.getKey();
+			if (userCourant.getIdSalon() == sender.getIdSalon()) {
 				clientThreads.add(entry.getValue());
+			} else
+			{
+				// Le user n'est pas sur le salon de l'emetteur
+				// Il faut stocker que le user aura un message en attente sur ce salon
+				//US10: Afficher salon avec message en attente
+				Salon salonEmetteur =  listeDesSalons.get(sender.getIdSalon()); // A retrouver dans liste salons
+				if (salonEmetteur.ajouteUserAPrevenir(userCourant.getLogin())) {
+					// C'est le premier message dans le salon pour cet user
+					entry.getValue().post(unMessageIRC.encode(userCourant.getLogin(), IfClientServerProtocol.MESS_ATTENTE, "", salonEmetteur.getNomSalon(), ""));
+				};
+				
 			}
 		}
-		unMessage = msg; // unMessageIRC.encode(sender.getLogin(),"#DISCUTE#",msg,"","");
+		unMessage = msg; 
 		if (clientTreadsMap.size() == 0) { // en mode test, on ne diffuse pas
 											// les messages
 			dernierMessageEnvoye = unMessage;

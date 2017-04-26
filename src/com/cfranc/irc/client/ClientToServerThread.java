@@ -191,30 +191,60 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			traiterRejointSalon(line);
 		} else if (unMessageIRC.verbe.equals(IfClientServerProtocol.QUITTE_SAL)) {
 			traiterQuitterSalon(line);
+		} else if (unMessageIRC.verbe.equals(IfClientServerProtocol.MESS_ATTENTE)) {
+			traiterMessageEnAttenteDansSalon(line);	
 		} else {
 			
 			receiveMessage(unMessageIRC.userEmetteur, unMessageIRC.commentaire);
 		}
+	}
+	
+	private void metEnRelief(DefaultListModel<String> listeAModifier, String element, boolean avecRelief) {
+		String aChercher; 
+		String remplacement;
+		
+		// A changer uniquement ici pour mettre en gras
+		if (avecRelief) {
+			// On veut mettre du relief, donc on cherche l'element pour y ajouter '='
+			aChercher = element;
+			remplacement= element + "=";
+		} else
+		{
+			// On cherche elemnent+'=' pour le remplacer par element
+			aChercher=element + "=";
+			remplacement = element;
+		}
+		System.out.println("met en relief, " + aChercher + "=> " + remplacement);
+		int position = listeAModifier.indexOf(aChercher);
+		if (position!= - 1) {
+			listeAModifier.setElementAt(remplacement, position);	
+			System.out.println("met en relief" + remplacement + "en position " + position);
+		}
+		
 	}
 
 	private void traiterQuitterSalon(String line) {
 		
 		receiveMessage(unMessageIRC.userEmetteur,
 				unMessageIRC.userEmetteur + " quitte le salon  " + unMessageIRC.salonCree);
-
-		// Enlever l'étoiles du unMessageIRC.userEmetteur si elles est là .
-		for (int vli = 0; vli < clientListModel.size(); vli++) {
-
-			String unUser = clientListModel.getElementAt(vli);
-			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());
-			String unUserSansEtoile = unUser.substring(0, unUser.length() - 1);
-
-			if (unUserSansEtoile.equals(unMessageIRC.userEmetteur)) {
-				if (laFinDuUser.equals("=")) {
-					clientListModel.setElementAt(unUserSansEtoile, vli);
-				}
-			}
-		}
+		metEnRelief(clientListModel, unMessageIRC.userEmetteur, false );
+		// Enlever '=' du user 
+		
+//		// Enlever l'étoiles du unMessageIRC.userEmetteur si elles est là .
+//		for (int vli = 0; vli < clientListModel.size(); vli++) {
+//
+//			String unUser = clientListModel.getElementAt(vli);
+//			
+//			
+//			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());
+//			String unUserSansEtoile = unUser.substring(0, unUser.length() - 1);
+//
+//			if (unUserSansEtoile.equals(unMessageIRC.userEmetteur)) {
+//				if (laFinDuUser.equals("=")) {
+//					clientListModel.setElementAt(unUserSansEtoile, vli);
+//				}
+//			}
+//		}
 
 		
 	}
@@ -230,14 +260,15 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 		// parcourir la liste et mettre une croix à celui qui est
 		// unMessageIRC.userEmetteur
+		metEnRelief(clientListModel, unMessageIRC.userEmetteur, true );
 
-		for (int vli = 0; vli < clientListModel.size(); vli++) {
-			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
-				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
-				// griser l'indice vli
-				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "=", vli);
-			}
-		}
+//		for (int vli = 0; vli < clientListModel.size(); vli++) {
+//			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
+//				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
+//				// griser l'indice vli
+//				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "=", vli);
+//			}
+//		}
 
 	
 	}
@@ -256,6 +287,9 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		}
 	}
 
+	protected void traiterMessageEnAttenteDansSalon(String line)  {
+		metEnRelief(salonListModel, unMessageIRC.salonCree, true );
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

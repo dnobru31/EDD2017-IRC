@@ -12,4 +12,5 @@ public interface IfClientServerProtocol {
 	public static final String AJ_SAL = "_AJ_SAL"; //##+#";
 	public static final String REJOINT_SAL = "_REJOINT_SAL";//##>#";
 	public static final String QUITTE_SAL = "QUITTE_SAL"; //"##<#";
+	public static final String MESS_ATTENTE = "MESS_ATTENTE";
 }

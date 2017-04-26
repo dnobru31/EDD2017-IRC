@@ -170,9 +170,20 @@ public class SimpleChatFrameClient extends JFrame {
 	}
 
 	public void sendMsgRejoindreUnSalonToSend(String nomDuSalon) {
+		
+		// US10, si le nom du salon contient '=' alors l'enlever avant de rejoindre le salon
+		// On enleve '=' dans le nom du salon
+		int positionSalon = ((DefaultListModel<String>) listSalonModel).indexOf(nomDuSalon);
+		nomDuSalon= nomDuSalon.replace("=", "");
+		((DefaultListModel<String>) listSalonModel).setElementAt(nomDuSalon,positionSalon);
+		
+		
+		
 		sender.setMsgToSend(
 				unMessageIRC.encode("<User Courant>", IfClientServerProtocol.REJOINT_SAL, "", nomDuSalon, ""));
 
+		// On enleve la mise en relief sur tous les users qui étaient sur ce salon
+		// REFACTOR, utiliser miseEnRelief de clientToServerThread
 		for (int vli = 0; vli < listModel.getSize(); vli++) {
 			String unUser = listModel.getElementAt(vli);
 			String laFinDuUser = unUser.substring(unUser.length() - 1, unUser.length());

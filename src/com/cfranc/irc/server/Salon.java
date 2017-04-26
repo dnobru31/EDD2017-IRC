@@ -16,6 +16,8 @@ public class Salon {
 	private List<User> listeDesUsers;
 	
 	public ArrayList<String> historique = new ArrayList<String>();
+	public ArrayList<String>  UserAPrevenir = new ArrayList<String>();
+	
 	public String getNomSalon() {
 		return nomSalon;
 	}
@@ -89,10 +91,37 @@ public class Salon {
 		return ajoutPossible;
 	}
 	
-	// Rejoue les message a partir du <depuis> eme.
-//	public StringArray rejoue( int depuis)  {
-//		
-//	}
+	public void retournerArchiveDuSalonVers(String loginUser,ServerToClientThread newServerToClientThread) {
+		
+		// On demande au serveur de poster au nouvel user (thread recu en
+		// paramétre)
+		// la liste de tous les messages archivés pour le salon courant
+
+		
+		
+		for (int i = 0; i < historique.size(); i++) {
+			newServerToClientThread.post(historique.get(i));
+		}
+		
+		//US10
+		// l'archive ayant été envoyée au client, on enleve l'info eventuelle qu'il avait des messages en attente
+		UserAPrevenir.remove(loginUser);
+
+
+	}
+	
+	
+	// US10, gérer les salons ayant recu des messages
+	public boolean ajouteUserAPrevenir(String loginUser) {
+		boolean ret=false;
+		 if (!UserAPrevenir.contains(loginUser)) {
+			 UserAPrevenir.add(loginUser);
+			 ret = true;
+		 }
+		 return true;
+	}
+	
+	
 	
 	
 	
