@@ -173,11 +173,7 @@ public class BroadcastThread extends Thread {
 
 	public static void sendMessage(User sender, String msg) {
 		String unMessage;
-		Collection<ServerToClientThread> clientThreads = new ArrayList<ServerToClientThread>();// =clientTreadsMap.values();
-																								// //
-																								// tous
-																								// les
-																								// Threads
+		Collection<ServerToClientThread> clientThreads = new ArrayList<ServerToClientThread>();
 		ServerToClientThread unThread;
 		for (Entry<User, ServerToClientThread> entry : clientTreadsMap.entrySet()) {
 			if (entry.getKey().getIdSalon() == sender.getIdSalon()) {

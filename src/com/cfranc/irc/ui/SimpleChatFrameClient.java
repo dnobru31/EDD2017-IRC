@@ -151,13 +151,10 @@ public class SimpleChatFrameClient extends JFrame {
 
 	public void sendMsgCSreationSalonToSend(String salonACreer) {
 
-		String loginUserPrivate = ""; // "guest"; // Il suffit de recevoir
-										// qqchose
-		// pour que le message de creation de salon ne soit partagé
-		// qu'entre l'emetteur et le private
+		String loginUserPrivate = "";
 		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", IfClientServerProtocol.AJ_SAL, "", salonACreer,
 				loginUserPrivate));
-		// IfClientServerProtocol.AJ_SAL + salonACreer);
+		
 
 	}
 
@@ -165,6 +162,7 @@ public class SimpleChatFrameClient extends JFrame {
 		// pour que le message de creation de salon ne soit partagé
 		// qu'entre l'emetteur et le private
 		String salonACreer;
+		userDestinataire = userDestinataire.replace("=", "");
 		salonACreer = "<User Courant>_avec_" + userDestinataire;
 		sender.setMsgToSend(unMessageIRC.encode("<User Courant>", IfClientServerProtocol.AJ_SAL, "", salonACreer,
 				userDestinataire));
@@ -444,7 +442,7 @@ public class SimpleChatFrameClient extends JFrame {
 				System.out.println(res);
 				sendMsgCSreationSalonToSend(res);
 			}
-			// sendMessage();
+			
 		}
 	}
 

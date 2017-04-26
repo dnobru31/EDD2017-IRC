@@ -216,59 +216,14 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 			}
 		}
 
-		/*
-		 * //Enlever une etoile. for (int vli = 0; vli < clientListModel.size();
-		 * vli++) { if
-		 * (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur))
-		 * { clientListModel.setElementAt(clientListModel.getElementAt(vli).
-		 * substring(0, clientListModel.getElementAt(vli).length() - 1), vli); }
-		 * }
-		 */
-
-		/*
-		 * // Enlever les étoiles si elles sont là . for (int vli = 0; vli <
-		 * clientListModel.size(); vli++) {
-		 * System.out.println(clientListModel.getElementAt(vli).substring(
-		 * clientListModel.getElementAt(vli).length() - 1,
-		 * clientListModel.getElementAt(vli).length())); if
-		 * (clientListModel.getElementAt(vli).substring(clientListModel.
-		 * getElementAt(vli).length() - 1,
-		 * clientListModel.getElementAt(vli).length()) == "*" ){
-		 * clientListModel.setElementAt(clientListModel.getElementAt(vli).
-		 * substring(0, clientListModel.getElementAt(vli).length() - 1), vli); }
-		 * }
-		 */
-
-		// parcourir la liste et grasser qui est unMessageIRC.userEmetteur
-		// for (int vli = 0; vli < clientListModel.size(); vli++) {
-		// System.out.println("traiterQuitterSalon test :"
-		// +clientListModel.toString());
-		// }
-
-		// TODO, mettre en gras les users du salon courant
-		// donc ici remettre en normal le user recu
-		// Voir si necessaire d'avertir qu'un client rejoint le salon courant
-
-		// !!! user LieAuThread n'est pas alimenté
-		// Salon salonCourant =
-		// BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
-		// if (salonCourant.getNomSalon() == nomSalon) {
-		// if(clientListModel.contains(nomUser)){
-		// // ajout dans liste user si pas déja présent
-		// clientListModel.removeElement(nomUser);
-		// }
-		// }
+		
 	}
 
 	private void traiterRejointSalon(String line) {
 		// Message recu commence par <REJOINT_SAL>, un user rejoint un salon
 		// Si c'est le salon de l'utilisateur courant alors on peut l'ajouter a
 		// la liste des users
-		// String reste =
-		// line.substring(IfClientServerProtocol.REJOINT_SAL.length());
-		// String[] rejointMsg=reste.split(IfClientServerProtocol.SEPARATOR);
-		// String nomUser=rejointMsg[0];
-		// String nomSalon = rejointMsg[1];
+		
 
 		receiveMessage(unMessageIRC.userEmetteur,
 				unMessageIRC.userEmetteur + " rejoint le salon " + unMessageIRC.salonCree);
@@ -279,21 +234,12 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		for (int vli = 0; vli < clientListModel.size(); vli++) {
 			if (clientListModel.getElementAt(vli).equals(unMessageIRC.userEmetteur)) {
 				System.out.println("traiterRejointSalon  test:" + clientListModel.getElementAt(vli).toString());
-				// grisser l'indice vli
+				// griser l'indice vli
 				clientListModel.setElementAt(clientListModel.getElementAt(vli) + "=", vli);
 			}
 		}
 
-		// Salon salonCourant =
-		// BroadcastThread.listeDesSalons.get(userLieAuThread.getIdSalon());
-
-		// if (salonCourant.getNomSalon() == nomSalon) {
-		// if(!clientListModel.contains(nomUser)){
-		// // ajout dans liste user si pas déja présent
-		// clientListModel.addElement(nomUser);
-		// receiveMessage(nomUser, nomUser + " rejoint le salon " + nomSalon );
-		// }
-		// }
+	
 	}
 
 	protected void traiterAjoutSalon(String line) {
@@ -410,8 +356,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 				// On envoie au serveur ce login mot de passe (pour qu'il
 				// accepte ou non sa connection)
 				streamOut.writeUTF(unMessageIRC.encode(this.login, "#Connection#", this.pwd, ".", "."));
-				// #login#pwd
-				// IfClientServerProtocol.SEPARATOR+this.login+IfClientServerProtocol.SEPARATOR+this.pwd);
+				
 			}
 
 			// On attend maintenant l'accusé reception du serveur

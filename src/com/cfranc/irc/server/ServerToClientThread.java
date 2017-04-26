@@ -219,12 +219,7 @@ public class ServerToClientThread extends Thread{
 			numeroSalonAJoindre = BroadcastThread.listeDesSalons.getNumero(nomSalon);
 			salonAJoindre = BroadcastThread.listeDesSalons.get(numeroSalonAJoindre);
 	
-			// A verifier que si REJOINT_SAL
-//			if (salonAJoindre.addUser(userAppelant)==false) {
-//				post("KO"); // le user est déja dans le salon
-//				messageRetenu = false;
-//			} else
-//			{
+
 				
 				System.out.println("ServerToClient: broadcaster " + typeMessage + " dans salon" + numeroSalonAJoindre);
 
@@ -232,7 +227,7 @@ public class ServerToClientThread extends Thread{
 				unThread = BroadcastThread.clientTreadsMap.get(userAppelant);
 				BroadcastThread.mouvementDansSalon(userAppelant, unThread, numeroSalonAJoindre,typeMessage);
 				
-//			};	
+
 		
 		return messageRetenu;
 	}
