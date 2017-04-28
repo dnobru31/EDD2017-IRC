@@ -447,25 +447,38 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 
 
 	protected ImageIcon getImageSad() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
+		/*BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = bi.getGraphics();
 		g.setColor(Color.red);
 		g.drawOval(0, 0, 14, 14);
 		g.drawLine(4, 9, 9, 9);
 		g.drawOval(4, 4, 1, 1);
 		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
+		return new ImageIcon(bi);*/
+		ImageIcon rs;
+		rs =  new ImageIcon("resources/icones/Amour/0002.gif");
+		return  rs;
 	}
 
 	protected ImageIcon getImageHappy() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
+		/*BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = bi.getGraphics();
 		g.setColor(Color.green);
 		g.drawOval(0, 0, 14, 14);
 		g.drawLine(4, 9, 9, 9);
 		g.drawOval(4, 4, 1, 1);
 		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
+		return new ImageIcon(bi);*/
+		ImageIcon rs;
+		rs =  new ImageIcon("resources/icones/Amour/0001.gif");
+		return  rs;
+	}
+	
+	protected ImageIcon getImageIcon(String icoCode) {
+		ImageIcon rs;
+		rs =  new ImageIcon("resources/icones/Amour/0001.gif");
+		return  rs;
+		
 	}
 
 }
