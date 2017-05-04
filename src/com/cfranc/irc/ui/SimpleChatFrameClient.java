@@ -306,7 +306,7 @@ public class SimpleChatFrameClient extends JFrame {
 
 		JSplitPane splitPane = new JSplitPane();
 		panel_2.add(splitPane, BorderLayout.CENTER);
-
+		
 		JTextPane textArea = new JTextPane((StyledDocument) documentModel);
 
 		textArea.setEnabled(true);

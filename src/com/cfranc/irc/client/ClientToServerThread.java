@@ -130,7 +130,7 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 				while (index > -1) {
 					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
 					SimpleAttributeSet attrs = new SimpleAttributeSet();
-					StyleConstants.setIcon(attrs, getImageHappy());
+					StyleConstants.setIcon(attrs, getImageIcon("resources/icones/Amour/0021.gif"));
 					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ":)", attrs);
 					start = index + 2;
 					index = line.indexOf(":)", start);
@@ -145,10 +145,42 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 				while (index > -1) {
 					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
 					SimpleAttributeSet attrs = new SimpleAttributeSet();
-					StyleConstants.setIcon(attrs, getImageSad());
+					StyleConstants.setIcon(attrs, getImageIcon("resources/icones/Amour/0017.gif"));
 					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ":(", attrs);
 					start = index + 2;
 					index = line.indexOf(":(", start);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			try {
+
+				int index = line.indexOf(";)");
+				int start = 0;
+				while (index > -1) {
+					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
+					SimpleAttributeSet attrs = new SimpleAttributeSet();
+					StyleConstants.setIcon(attrs, getImageIcon("resources/icones/Amour/0071.gif"));
+					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ";)", attrs);
+					start = index + 2;
+					index = line.indexOf(";)", start);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			try {
+
+				int index = line.indexOf(";(");
+				int start = 0;
+				while (index > -1) {
+					documentModel.remove( documentModel.getLength() - line.length()-1 + index, 2);
+					SimpleAttributeSet attrs = new SimpleAttributeSet();
+					StyleConstants.setIcon(attrs, getImageIcon("resources/icones/Amour/0002.gif"));
+					documentModel.insertString(1 + documentModel.getLength() - line.length() + index, ";(", attrs);
+					start = index + 2;
+					index = line.indexOf(";(", start);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -414,27 +446,13 @@ public class ClientToServerThread extends Thread implements IfSenderModel {
 		return res;
 	}
 
-
-	protected ImageIcon getImageSad() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.getGraphics();
-		g.setColor(Color.red);
-		g.drawOval(0, 0, 14, 14);
-		g.drawLine(4, 9, 9, 9);
-		g.drawOval(4, 4, 1, 1);
-		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
-	}
-
-	protected ImageIcon getImageHappy() {
-		BufferedImage bi = new BufferedImage(15, 15, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.getGraphics();
-		g.setColor(Color.green);
-		g.drawOval(0, 0, 14, 14);
-		g.drawLine(4, 9, 9, 9);
-		g.drawOval(4, 4, 1, 1);
-		g.drawOval(10, 4, 1, 1);
-		return new ImageIcon(bi);
+	
+	protected ImageIcon getImageIcon(String iconPath) {
+		ImageIcon rs;
+		//rs =  new ImageIcon("resources/icones/Amour/0001.gif");
+		rs =  new ImageIcon(iconPath);
+		return  rs;
+		
 	}
 
 }
